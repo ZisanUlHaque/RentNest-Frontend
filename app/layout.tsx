@@ -1,30 +1,30 @@
-import { Geist, Geist_Mono, Roboto } from "next/font/google"
-
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
+import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import "./globals.css";
 
-const roboto = Roboto({subsets:['latin'],variable:'--font-sans'})
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
+  
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", roboto.variable)}
+      className={cn("h-full antialiased", "font-sans", inter.variable)}
     >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="min-h-full flex flex-col">
+
+        <Toaster position="top-right" richColors />
+        {/* Navbar */}
+        {children}
+
+        {/* Footer */}
       </body>
     </html>
-  )
+  );
 }

@@ -1,5 +1,11 @@
-import type { NextConfig } from "next"
+import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {}
+const nextConfig: NextConfig = {
+  /* config options here */
+  cacheComponents: true,
+images: {
+  remotePatterns: [{ protocol: "https", hostname: "i.ibb.co" }],
+}
+};
 
-export default nextConfig
+export default nextConfig;
