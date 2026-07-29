@@ -1,17 +1,11 @@
-import { Button } from "@/components/ui/button";
+// app/page.tsx
+import HeroSection from "@/components/home/HeroSection";
 
-export default async function HomePage() {
-
-
+export default function HomePage() {
   return (
-    <div>Hello, Next.js!
-
-      <Button
-      size={"xs"}
-      variant={"destructive"}
-      >
-        Click Me
-      </Button>
-    </div>
+    <main>
+      <HeroSection />
+      {/* Other sections */}
+    </main>
   );
 }

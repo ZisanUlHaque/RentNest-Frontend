@@ -94,14 +94,14 @@ export function Navbar({ user }: NavbarProps) {
             <div className="flex items-center">
               <Link href="/" className="flex items-center gap-2">
                 <div className="size-8 rounded-lg bg-gradient-to-b from-[#1f6feb] via-[#3b82f6] to-[#60a5fa] flex items-center justify-center shadow-lg">
-                  <span className="text-sm font-bold text-white">PP</span>
+                  <span className="text-sm font-bold text-white">RN</span>
                 </div>
                 <span
                   className={`hidden font-bold text-lg sm:inline transition-colors ${
                     solid ? "text-primary" : "text-white"
                   }`}
                 >
-                  Prisma Press
+                  RentNest
                 </span>
               </Link>
             </div>
