@@ -4,7 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
 images: {
-  remotePatterns: [{ protocol: "https", hostname: "i.ibb.co" }],
+  remotePatterns: [{ protocol: "https", hostname: "i.ibb.co" },
+    { protocol: "https", hostname: "images.unsplash.com" },
+  ],
 }
 };
 

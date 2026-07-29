@@ -1,30 +1,36 @@
-"use server";
+"use server"
 
 import { cookies } from "next/headers";
 
 export const getMe = async () => {
-  const cookieStore = await cookies();
+    const cookieStore = await cookies();
 
-  const accessToken = cookieStore.get("accessToken")?.value || null;
+    const accessToken = cookieStore.get("accessToken")?.value || null;
 
-  if (!accessToken) {
-    return {
-      success: false,
-      message: "User not logged in!!",
-    };
-  }
+    if(!accessToken){
+   
 
-  const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/me`, {
-    headers: {
-      Cookie: `accessToken=${accessToken}`,
-    },
-    cache: "force-cache",
-    next: {
-      revalidate: 60 * 60 * 24, // 1day
-      tags: ["my-profile"],
-    },
-  });
+        return {
+            success : false,
+            message : "User not logged in!"
+        }
+    }
 
-  const result = res.json();
-  return result;
-};
+    const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/me`, {
+        headers : {
+
+            Cookie : `accessToken=${accessToken}`
+        },
+
+        cache : "force-cache",
+        next : {
+            revalidate : 60 * 60 * 24, // 1day
+            tags : ["my-profile"]
+        }
+    });
+
+    const result = res.json();
+
+
+    return result
+}
