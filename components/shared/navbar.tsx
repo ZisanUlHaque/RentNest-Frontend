@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   DropdownMenu,
@@ -7,77 +7,81 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 
-import { LayoutDashboard, LogOut, Settings, User } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { logout } from "@/service/logout";
-import { useState, useEffect } from "react";
-import { NavbarProps } from "@/lib/types";
+import { LayoutDashboard, LogOut, Settings, User } from "lucide-react"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { Button } from "../ui/button"
+import { logout } from "@/service/logout"
+import { useState, useEffect } from "react"
+import { IRole, NavbarProps } from "@/lib/types"
 
-// Navigation items configuration
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
+  { label: "Property", href: "/properties" },
   { label: "Services", href: "/services" },
   { label: "Contact", href: "/contact" },
-  { label: "News", href: "/news" },
-  { label: "Premium", href: "/premium" },
-];
+]
 
-// User menu items configuration
 const userMenuItems = [
   { label: "Dashboard", icon: LayoutDashboard, action: "dashboard" },
   { label: "Profile", icon: User, action: "profile" },
   { label: "Settings", icon: Settings, action: "settings" },
-];
+] as const
 
+// ✅ Role → Dashboard route map (cleaner than if/else chain)
+const dashboardRoutes: Record<IRole, string> = {
+  TENANT: "/dashboard",
+  LANDLORD: "/landlord-dashboard",
+  ADMIN: "/admin-dashboard",
+}
 
 export function Navbar({ user }: NavbarProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter()
+  const pathname = usePathname()
+  const [isScrolled, setIsScrolled] = useState(false)
 
-  const isHome = pathname === "/";
-  const solid = !isHome || isScrolled;
+  const isHome = pathname === "/"
+  const solid = !isHome || isScrolled
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    handleScroll(); 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20)
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const handleUserMenuAction = async (action: string) => {
+    // ✅ Guard: only run if user is logged in
+    if (!user.success) return
 
-    if (action === "dashboard") {
-      if (user.data.profile.role === "USER") {
-        router.push("/dashboard")
-      }
-      else if (user.data.profile.role === "ADMIN") {
-        router.push("/admin-dashboard")
-      }
-      else if (user.data.profile.role === "AUTHOR") {
-        router.push("/author-dashboard")
-      }
+    const role = user.data.profile.role
 
-      return;
+    switch (action) {
+      case "dashboard":
+        router.push(dashboardRoutes[role] ?? "/dashboard")
+        break
 
+      case "profile":
+        router.push("/profile")
+        break
+
+      case "settings":
+        router.push("/settings")
+        break
+
+      case "logout":
+        await logout()
+        toast.success("User Logged Out Successfully!")
+        router.push("/login")
+        break
+
+      default:
+        break
     }
-
-    
-    if (action === "logout") {
-      await logout();
-      toast.success("User Logged Out Successfully!");
-      router.push("/login");
-    }
-  };
+  }
 
   return (
     <>
@@ -108,23 +112,30 @@ export function Navbar({ user }: NavbarProps) {
 
             {/* Nav Links */}
             <div className="hidden md:absolute md:left-1/2 md:transform md:-translate-x-1/2 md:flex md:items-center md:gap-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`transition-colors text-sm font-medium ${
-                    solid
-                      ? "text-slate-600 hover:text-primary"
-                      : "text-white/90 hover:text-white"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`transition-colors text-sm font-medium ${
+                      solid
+                        ? isActive
+                          ? "text-primary"
+                          : "text-slate-600 hover:text-primary"
+                        : isActive
+                        ? "text-white"
+                        : "text-white/90 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
             </div>
 
             {/* User Dropdown / Login Button */}
-            {user.success ? (
+            {user?.success ? (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <div
@@ -145,6 +156,7 @@ export function Navbar({ user }: NavbarProps) {
                     </div>
                   </div>
                 </DropdownMenuTrigger>
+
                 <DropdownMenuContent
                   align="end"
                   className="w-56 border-gray-200 shadow-lg"
@@ -152,33 +164,36 @@ export function Navbar({ user }: NavbarProps) {
                   <DropdownMenuLabel className="font-normal text-slate-900">
                     <div className="flex flex-col gap-1">
                       <p className="text-sm font-medium">
-                        {user.data?.profile.name}
+                        {user.data.profile.name}
                       </p>
                       <p className="text-xs text-slate-500">
-                        {user.data?.profile.email}
+                        {user.data.profile.email}
                       </p>
+                      <span className="text-[10px] mt-1 inline-block w-fit px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                        {user.data.profile.role}
+                      </span>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+
                   {userMenuItems.map((item) => {
-                    const Icon = item.icon;
+                    const Icon = item.icon
                     return (
                       <DropdownMenuItem
                         key={item.action}
                         onClick={() => handleUserMenuAction(item.action)}
-                        className="text-slate-700"
+                        className="text-slate-700 cursor-pointer"
                       >
                         <Icon className="w-4 h-4 mr-2 text-slate-500" />
                         <span>{item.label}</span>
                       </DropdownMenuItem>
-                    );
+                    )
                   })}
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={async () => {
-                      await handleUserMenuAction("logout");
-                    }}
-                    className="text-red-600 focus:bg-red-50"
+                    onClick={() => handleUserMenuAction("logout")}
+                    className="text-red-600 focus:bg-red-50 cursor-pointer"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     <span>Log out</span>
@@ -186,7 +201,7 @@ export function Navbar({ user }: NavbarProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href={"/login"}>
+              <Link href="/login">
                 <Button
                   variant={solid ? "default" : "outline"}
                   className={`h-9 cursor-pointer ${
@@ -205,5 +220,5 @@ export function Navbar({ user }: NavbarProps) {
 
       {!isHome && <div className="h-16" />}
     </>
-  );
+  )
 }
