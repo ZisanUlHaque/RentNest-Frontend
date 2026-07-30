@@ -1,19 +1,21 @@
-import Image from "next/image";
-import { MapPin, Star } from "lucide-react";
+import Image from "next/image"
+import { MapPin, Star } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { IProperty } from "@/lib/types";
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { IProperty } from "@/lib/types"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 type PropertyCardProps = {
-  post: IProperty;
-};
+  post: IProperty
+}
 
 export function PropertyCard({ post }: PropertyCardProps) {
-  const reviewCount = post._count?.reviews ?? post.reviews?.length ?? 0;
+  const reviewCount = post._count?.reviews ?? post.reviews?.length ?? 0
 
   return (
-    <Card className="overflow-hidden pt-0">
+    <Card className="overflow-hidden pt-0 flex flex-col">
       <div className="relative h-56 w-full">
         <Image
           src={post.images[0]}
@@ -22,18 +24,12 @@ export function PropertyCard({ post }: PropertyCardProps) {
           unoptimized
           className="object-cover"
         />
-
-        <Badge className="absolute top-3 right-3">
-          {post.status}
-        </Badge>
+        <Badge className="absolute top-3 right-3">{post.status}</Badge>
       </div>
 
-      <CardContent className="space-y-4 p-4">
+      <CardContent className="flex flex-col flex-1 space-y-4 p-4">
         <div>
-          <h3 className="line-clamp-1 text-lg font-semibold">
-            {post.title}
-          </h3>
-
+          <h3 className="line-clamp-1 text-lg font-semibold">{post.title}</h3>
           <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             {post.location}
@@ -52,7 +48,7 @@ export function PropertyCard({ post }: PropertyCardProps) {
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto">
           <div>
             <p className="text-xl font-bold text-primary">
               ৳{post.rentPerMonth.toLocaleString()}
@@ -65,7 +61,13 @@ export function PropertyCard({ post }: PropertyCardProps) {
             {reviewCount} Reviews
           </div>
         </div>
+
+        <Link href={`/properties/${post.id}`} className="w-full">
+          <Button variant="outline" className="w-full bg-chart-4 hover:bg-chart-3 text-white">
+            View Details
+          </Button>
+        </Link>
       </CardContent>
     </Card>
-  );
+  )
 }
