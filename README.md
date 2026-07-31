@@ -12,7 +12,7 @@ A modern, full-stack rental marketplace connecting landlords with tenants throug
 ![Stripe](https://img.shields.io/badge/Stripe-Integrated-635BFF?style=for-the-badge&logo=stripe)
 ![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?style=for-the-badge&logo=prisma)
 
-[🌐 Live Demo](https://rent-nest-frontend.vercel.app) • [📘 API Docs](./API_INTEGRATION.md) • [🔗 Backend Repo](https://github.com/yourusername/rent-nest-backend)
+[🌐 Live Demo](https://rent-nest-frontend.vercel.app) • [📘 API Docs](./API_INTEGRATION.md) • [🔗 Backend Repo](https://github.com/ZisanUlHaque/RentNest)
 
 </div>
 
@@ -696,10 +696,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE
 
 **Zisan Ul Haque**
 
-- 🌐 Portfolio: [yourportfolio.com](https://yourportfolio.com)
-- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- 🐦 Twitter: [@yourhandle](https://twitter.com/yourhandle)
-- 📧 Email: your.email@example.com
+- 🌐 Portfolio: [yourportfolio.com](https://zisan-ul-haque.vercel.app)
+- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/zisan-ul-haque)
 
 ---
 
