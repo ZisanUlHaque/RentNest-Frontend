@@ -696,8 +696,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE
 
 **Zisan Ul Haque**
 
-- 🌐 Portfolio: [yourportfolio.com](https://zisan-ul-haque.vercel.app)
-- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/zisan-ul-haque)
+- 🌐 Portfolio: [zisan-ul-haque.com](https://zisan-ul-haque.vercel.app)
+- 💼 LinkedIn: [linkedin.com/in/zisan-ul-haque](https://www.linkedin.com/in/zisan-ul-haque)
 
 ---
 
