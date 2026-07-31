@@ -3,7 +3,6 @@
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
-// ═══════ CREATE CHECKOUT SESSION ═══════
 export const createCheckoutSession = async (rentalRequestId: string) => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
@@ -13,7 +12,7 @@ export const createCheckoutSession = async (rentalRequestId: string) => {
   }
 
   const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/payments/create`, // ✅ /create
+    `${process.env.BACKEND_API_URL}/api/payments/create`, 
     {
       method: "POST",
       headers: {
@@ -27,7 +26,6 @@ export const createCheckoutSession = async (rentalRequestId: string) => {
   return res.json()
 }
 
-// ═══════ GET MY PAYMENTS ═══════
 export const getMyPayments = async () => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
@@ -37,7 +35,7 @@ export const getMyPayments = async () => {
   }
 
   const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/payments`, // ✅ /
+    `${process.env.BACKEND_API_URL}/api/payments`, 
     {
       headers: { Cookie: `accessToken=${accessToken}` },
       next: {
@@ -50,7 +48,6 @@ export const getMyPayments = async () => {
   return res.json()
 }
 
-// ═══════ GET PAYMENT BY ID ═══════
 export const getPaymentById = async (paymentId: string) => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
@@ -70,9 +67,7 @@ export const getPaymentById = async (paymentId: string) => {
   return res.json()
 }
 
-// ═══════ REFRESH PAYMENT DATA (after redirect) ═══════
-// Since your backend uses webhook, no manual verify needed
-// Just revalidate cache to get updated status
+
 export const refreshPayments = async () => {
   revalidateTag("my-payments", "")
   revalidateTag("my-rental-requests", "")

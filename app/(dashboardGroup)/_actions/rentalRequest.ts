@@ -3,7 +3,8 @@
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
-// ═══════ CREATE RENTAL REQUEST (Tenant) ═══════
+const RENTAL_API = `${process.env.BACKEND_API_URL}/api/rentals`
+
 export const createRentalRequest = async (payload: {
   propertyId: string
   moveInDate: string
@@ -17,30 +18,26 @@ export const createRentalRequest = async (payload: {
     return { success: false, message: "Please login to submit request" }
   }
 
-  const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/rental-requests`,
-    {
-      method: "POST",
-      headers: {
-        Cookie: `accessToken=${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    }
-  )
+  const res = await fetch(RENTAL_API, {
+    method: "POST",
+    headers: {
+      Cookie: `accessToken=${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+    body: JSON.stringify(payload),
+  })
 
   const result = await res.json()
 
   if (result.success) {
-    revalidateTag("my-rental-requests", "")
-    revalidateTag("landlord-requests", "")
+    revalidateTag("my-rental-requests","")
+    revalidateTag("landlord-requests","")
   }
 
   return result
 }
 
-// ═══════ GET MY RENTAL REQUESTS (Tenant OR Landlord) ═══════
-// Backend GET / returns different data based on role automatically
 export const getMyRentalRequests = async () => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
@@ -49,21 +46,17 @@ export const getMyRentalRequests = async () => {
     return { success: false, message: "Not authenticated", data: [] }
   }
 
-  const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/rental-requests`,
-    {
-      headers: { Cookie: `accessToken=${accessToken}` },
-      next: {
-        revalidate: 60,
-        tags: ["my-rental-requests", "landlord-requests"],
-      },
-    }
-  )
+  const res = await fetch(RENTAL_API, {
+    headers: { Cookie: `accessToken=${accessToken}` },
+    next: {
+      revalidate: 60,
+      tags: ["my-rental-requests", "landlord-requests"],
+    },
+  })
 
   return res.json()
 }
 
-// ═══════ GET SINGLE RENTAL REQUEST ═══════
 export const getRentalRequestById = async (id: string) => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
@@ -72,18 +65,14 @@ export const getRentalRequestById = async (id: string) => {
     return { success: false, message: "Not authenticated" }
   }
 
-  const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/rental-requests/${id}`,
-    {
-      headers: { Cookie: `accessToken=${accessToken}` },
-      cache: "no-store",
-    }
-  )
+  const res = await fetch(`${RENTAL_API}/${id}`, {
+    headers: { Cookie: `accessToken=${accessToken}` },
+    cache: "no-store",
+  })
 
   return res.json()
 }
 
-// ═══════ UPDATE REQUEST STATUS (Landlord: Approve/Reject) ═══════
 export const updateRequestStatus = async (
   requestId: string,
   status: "APPROVED" | "REJECTED"
@@ -96,7 +85,7 @@ export const updateRequestStatus = async (
   }
 
   const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/rental-requests/landlord/requests/${requestId}`,
+    `${RENTAL_API}/landlord/requests/${requestId}`,
     {
       method: "PATCH",
       headers: {
@@ -111,8 +100,27 @@ export const updateRequestStatus = async (
 
   if (result.success) {
     revalidateTag("landlord-requests", "")
-    revalidateTag("my-rental-requests", "")
+    revalidateTag("my-rental-requests","")
   }
 
   return result
+}
+
+export const adminGetAllRentals = async () => {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get("accessToken")?.value
+
+  if (!accessToken) {
+    return { success: false, message: "Not authenticated", data: [] }
+  }
+
+  const res = await fetch(`${RENTAL_API}/admin/rentals`, {
+    headers: { Cookie: `accessToken=${accessToken}` },
+    next: {
+      revalidate: 60,
+      tags: ["admin-rentals"],
+    },
+  })
+
+  return res.json()
 }

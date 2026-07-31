@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { getMe } from "@/service/getMe"
+import { PropertyReviews } from "../../_components/property/PropertyReviews"
 
 export default async function PropertyDetailPage({
   params,
@@ -18,10 +19,7 @@ export default async function PropertyDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [property, user] = await Promise.all([
-    getPropertyById(id),
-    getMe(),
-  ])
+  const [property, user] = await Promise.all([getPropertyById(id), getMe()])
 
   if (!property) notFound()
 
@@ -33,19 +31,19 @@ export default async function PropertyDetailPage({
     <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-          <Link href="/" className="hover:text-primary transition-colors">
+        <div className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/" className="transition-colors hover:text-primary">
             Home
           </Link>
           <span>/</span>
           <Link
             href="/properties"
-            className="hover:text-primary transition-colors"
+            className="transition-colors hover:text-primary"
           >
             Properties
           </Link>
           <span>/</span>
-          <span className="text-foreground font-medium truncate max-w-48">
+          <span className="max-w-48 truncate font-medium text-foreground">
             {property.title}
           </span>
         </div>
@@ -53,15 +51,14 @@ export default async function PropertyDetailPage({
         {/* Back Button */}
         <Link
           href="/properties"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 group transition-colors"
+          className="group mb-8 inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
         >
-          <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
           Back to Properties
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* ════════════ Left Column ════════════ */}
-          <div className="lg:col-span-8 space-y-8">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          <div className="space-y-8 lg:col-span-8">
             {/* Image Gallery */}
             <PropertyImageGallery
               images={property.images}
@@ -72,18 +69,20 @@ export default async function PropertyDetailPage({
             <div className="space-y-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                  <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                     {property.title}
                   </h1>
                   <div className="flex items-center gap-3 text-muted-foreground">
                     <div className="flex items-center gap-1.5">
-                      <div className="size-2 rounded-full bg-primary animate-pulse" />
+                      <div className="size-2 animate-pulse rounded-full bg-primary" />
                       <span>{property.location}</span>
                     </div>
                     {property.category && (
                       <>
                         <span>•</span>
-                        <Badge variant="outline">{property.category.name}</Badge>
+                        <Badge variant="outline">
+                          {property.category.name}
+                        </Badge>
                       </>
                     )}
                   </div>
@@ -91,12 +90,12 @@ export default async function PropertyDetailPage({
 
                 {/* Status Badge */}
                 <Badge
-                  className={`text-sm px-4 py-1.5 ${
+                  className={`px-4 py-1.5 text-sm ${
                     property.status === "AVAILABLE"
-                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-200"
+                      ? "border-emerald-200 bg-emerald-500/10 text-emerald-600"
                       : property.status === "RENTED"
-                      ? "bg-orange-500/10 text-orange-600 border-orange-200"
-                      : "bg-blue-500/10 text-blue-600 border-blue-200"
+                        ? "border-orange-200 bg-orange-500/10 text-orange-600"
+                        : "border-blue-200 bg-blue-500/10 text-blue-600"
                   }`}
                   variant="outline"
                 >
@@ -132,10 +131,10 @@ export default async function PropertyDetailPage({
 
             {/* Property Info */}
             <PropertyInfo property={property} />
+            <PropertyReviews propertyId={property.id} />
           </div>
 
-          {/* ════════════ Right Column - Sidebar ════════════ */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="space-y-6 lg:col-span-4">
             <div className="sticky top-24 space-y-6">
               {/* Price Card */}
               <Card className="overflow-hidden">
@@ -145,24 +144,24 @@ export default async function PropertyDetailPage({
                     <span className="text-4xl font-bold text-primary">
                       ৳{property.rentPerMonth.toLocaleString()}
                     </span>
-                    <span className="text-muted-foreground text-sm">
+                    <span className="text-sm text-muted-foreground">
                       / month
                     </span>
                   </div>
                 </div>
 
-                <div className="p-6 space-y-5">
+                <div className="space-y-5 p-6">
                   {/* Property Quick Info */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 rounded-xl bg-muted/50">
+                    <div className="rounded-xl bg-muted/50 p-3 text-center">
                       <p className="text-xs text-muted-foreground">Status</p>
-                      <p className="font-semibold text-sm mt-1">
+                      <p className="mt-1 text-sm font-semibold">
                         {property.status}
                       </p>
                     </div>
-                    <div className="text-center p-3 rounded-xl bg-muted/50">
+                    <div className="rounded-xl bg-muted/50 p-3 text-center">
                       <p className="text-xs text-muted-foreground">Category</p>
-                      <p className="font-semibold text-sm mt-1">
+                      <p className="mt-1 text-sm font-semibold">
                         {property.category?.name ?? "N/A"}
                       </p>
                     </div>
@@ -179,29 +178,29 @@ export default async function PropertyDetailPage({
                         <Link href="/login" className="block">
                           <Button
                             size="lg"
-                            className="w-full text-lg font-semibold cursor-pointer"
+                            className="w-full cursor-pointer text-lg font-semibold"
                           >
                             Login to Request
                           </Button>
                         </Link>
-                        <p className="text-xs text-center text-muted-foreground">
+                        <p className="text-center text-xs text-muted-foreground">
                           You need to be logged in to submit a rental request
                         </p>
                       </div>
                     )
                   ) : (
-                    <div className="text-center py-4 px-3 rounded-xl bg-orange-50 border border-orange-200">
-                      <p className="text-orange-600 font-medium">
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 px-3 py-4 text-center">
+                      <p className="font-medium text-orange-600">
                         This property is currently not available
                       </p>
-                      <p className="text-xs text-orange-500 mt-1">
+                      <p className="mt-1 text-xs text-orange-500">
                         Check back later or explore other listings
                       </p>
                     </div>
                   )}
 
                   {/* Trust Badge */}
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+                  <div className="flex items-center gap-2 pt-2 text-xs text-muted-foreground">
                     <Shield className="size-4 text-green-500" />
                     <span>Verified listing • Secure transaction</span>
                   </div>
