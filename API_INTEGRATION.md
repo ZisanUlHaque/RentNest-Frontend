@@ -1,21 +1,23 @@
-# 🔌 API Integration Documentation
+# 🔌 API Integration Documentation — RentNest
 
-Complete mapping of frontend components/pages to backend API endpoints for **RentNest** platform.
+Complete mapping of frontend components/pages to backend API endpoints for the **RentNest** rental platform.
 
 ---
 
 ## 📌 Table of Contents
 
-1. [Base Configuration](#base-configuration)
-2. [Authentication Endpoints](#authentication-endpoints)
-3. [User Endpoints](#user-endpoints)
-4. [Property Endpoints](#property-endpoints)
-5. [Category Endpoints](#category-endpoints)
-6. [Rental Request Endpoints](#rental-request-endpoints)
-7. [Payment Endpoints](#payment-endpoints)
-8. [Review Endpoints](#review-endpoints)
-9. [Admin Endpoints](#admin-endpoints)
-10. [Server Actions Overview](#server-actions-overview)
+1. [Base Configuration](#-base-configuration)
+2. [Auth Actions](#-auth-actions)
+3. [Property Actions](#-property-actions)
+4. [Rental Request Actions](#-rental-request-actions)
+5. [Payment Actions](#-payment-actions)
+6. [Review Actions](#-review-actions)
+7. [Admin Actions](#-admin-actions)
+8. [Cache Revalidation Strategy](#-cache-revalidation-strategy)
+9. [Authentication Flow](#-authentication-flow)
+10. [Role-Based Access](#-role-based-access)
+11. [User Journeys](#-user-journeys)
+12. [Environment Variables](#-environment-variables)
 
 ---
 
@@ -28,527 +30,742 @@ BACKEND_API_URL=http://localhost:5000
 BACKEND_API_URL=https://rent-nest-backend-sigma.vercel.app
 ```
 
-**Authentication:** Cookie-based (`accessToken`)  
+**Authentication:** Cookie-based (`accessToken`, `refreshToken`)  
 **Response Format:** JSON
 
-**Standard Success Response:**
+### Standard Response Shapes
+
+**Success:**
 ```json
 {
   "success": true,
+  "statusCode": 200,
   "message": "Operation successful",
   "data": { ... }
 }
 ```
 
-**Standard Error Response:**
+**Error:**
 ```json
 {
   "success": false,
+  "statusCode": 400,
   "message": "Error description"
 }
 ```
 
 ---
 
-## 🔐 Authentication Endpoints
+## 🔐 Auth Actions
 
-Base path: `/api/auth`
+**File:** `service/authActions.ts` (or similar)
 
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| POST | `/api/auth/register` | Register new user |  Public |
-| POST | `/api/auth/login` | Login user |  Public |
-| POST | `/api/auth/logout` | Logout user |  Any |
+### Endpoints Used
 
-### Frontend Mapping
+| Backend Endpoint | Method | Purpose |
+|------------------|--------|---------|
+| `/api/auth/login` | POST | User login (returns tokens) |
+| `/api/users/register` | POST | User registration |
 
-| Component/Page | File | Endpoint Used |
-|----------------|------|---------------|
-| Register Page | `app/(authGroup)/register/page.tsx` | `POST /api/auth/register` |
-| Login Page | `app/(authGroup)/login/page.tsx` | `POST /api/auth/login` |
-| Navbar Logout | `components/shared/navbar.tsx` | `POST /api/auth/logout` |
+### Server Actions
 
-**Server Actions:** `service/logout.ts`, `service/register.ts`, `service/login.ts`
-
----
-
-## 👤 User Endpoints
-
-Base path: `/api/users`
-
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| GET | `/api/users/me` | Get current user profile | Any |
-| GET | `/api/users` | Get all users |  Admin |
-| PATCH | `/api/users/:id/status` | Ban/Unban user |  Admin |
+| Function | Description | Redirects To |
+|----------|-------------|--------------|
+| `loginAction(prevState, formData)` | Logs in user, sets cookies, decodes JWT role | Role-based dashboard |
+| `registerAction(payload)` | Registers user, auto-logins, redirects | Role-based dashboard |
 
 ### Frontend Mapping
 
-| Component/Page | File | Endpoint |
-|----------------|------|----------|
-| Navbar (get user) | `components/shared/navbar.tsx` | `GET /api/users/me` |
-| Admin Users Page | `app/(dashboardGroup)/admin-dashboard/users/page.tsx` | `GET /api/users` |
-| Ban/Unban Button | `_components/admin/UsersTable.tsx` | `PATCH /api/users/:id/status` |
+| Component/Page | File | Action Used |
+|----------------|------|-------------|
+| Login Form | `app/(authGroup)/login/page.tsx` | `loginAction` |
+| Register Form | `app/(authGroup)/register/page.tsx` | `registerAction` |
 
-**Server Actions:** `service/getMe.ts`, `_actions/admin.ts`
+### Cookies Set
 
----
+| Cookie Name | MaxAge | Purpose |
+|-------------|--------|---------|
+| `accessToken` | 24 hours | JWT for authentication |
+| `refreshToken` | 7 days | Token refresh |
 
-## 🏠 Property Endpoints
+### Role-Based Redirection (post-login)
 
-Base path: `/api/properties`
-
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| GET | `/api/properties` | Get all properties (with filters) |  Public |
-| GET | `/api/properties/:propertyId` | Get single property |  Public |
-| POST | `/api/properties` | Create property |  Landlord |
-| PUT | `/api/properties/:propertyId` | Update property |  Landlord |
-| DELETE | `/api/properties/:propertyId` | Delete property |  Landlord |
-| GET | `/api/properties/landlord/my-properties` | Get landlord's properties |  Landlord |
-| GET | `/api/properties/admin/all` | Admin: get all properties |  Admin |
-
-### Query Parameters (for filtering)
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `searchTerm` | string | Search title, description, location |
-| `location` | string | Filter by location |
-| `categoryId` | string | Filter by category |
-| `minRent` | number | Minimum rent |
-| `maxRent` | number | Maximum rent |
-| `status` | enum | AVAILABLE, PENDING, RENTED |
-| `page` | number | Pagination |
-| `limit` | number | Items per page |
-
-### Frontend Mapping
-
-| Component/Page | File | Endpoint |
-|----------------|------|----------|
-| Properties List | `app/(publicGroup)/properties/page.tsx` | `GET /api/properties?filters` |
-| Property Search Bar | `_components/property/PropertySearchBar.tsx` | URL query params |
-| Property Filters | `_components/property/PropertyFilters.tsx` | URL query params |
-| Property Card | `_components/property/PropertyCard.tsx` | Displays data |
-| Property Details | `app/(publicGroup)/properties/[id]/page.tsx` | `GET /api/properties/:id` |
-| Landlord: My Properties | `landlord-dashboard/properties/page.tsx` | `GET /landlord/my-properties` |
-| Create Property Modal | `_components/property/PropertyFormDialog.tsx` (create mode) | `POST /api/properties` |
-| Edit Property Modal | `_components/property/PropertyFormDialog.tsx` (edit mode) | `PUT /api/properties/:id` |
-| Delete Property Dialog | `_components/property/DeletePropertyDialog.tsx` | `DELETE /api/properties/:id` |
-
-**Server Actions:** `_actions/getProperty.ts`, `_actions/getPropertyById.ts`, `_actions/property.ts`
+```typescript
+if (decodedToken.role === "TENANT")   → redirect("/tenant-dashboard")
+if (decodedToken.role === "LANDLORD") → redirect("/landlord-dashboard")
+if (decodedToken.role === "ADMIN")    → redirect("/admin-dashboard")
+```
 
 ---
 
-## 📂 Category Endpoints
+## 🏠 Property Actions
 
-Base path: `/api/categories`
+**File:** `app/(dashboardGroup)/_actions/property.ts`
 
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| GET | `/api/categories` | Get all categories |  Public |
-| POST | `/api/categories` | Create category |  Admin |
-| PATCH | `/api/categories/:id` | Update category |  Admin |
-| DELETE | `/api/categories/:id` | Delete category |  Admin |
+### Endpoints Used
 
-### Frontend Mapping
+| Backend Endpoint | Method | Purpose | Auth |
+|------------------|--------|---------|------|
+| `/api/properties` | POST | Create property | Landlord |
+| `/api/properties/:id` | PUT | Update property | Landlord |
+| `/api/properties/:id` | DELETE | Delete property | Landlord |
+| `/api/properties/landlord/my-properties` | GET | Get landlord's properties | Landlord |
 
-| Component/Page | File | Endpoint |
-|----------------|------|----------|
-| Property Filter Dropdown | `_components/property/PropertyFilters.tsx` | `GET /api/categories` |
-| Property Form Category Select | `_components/property/PropertyFormDialog.tsx` | `GET /api/categories` |
+### Server Actions
 
-**Server Actions:** `_actions/getCategories.ts`
+| Function | Endpoint | Frontend Component |
+|----------|----------|-------------------|
+| `createProperty(prevState, formData)` | `POST /api/properties` | `PropertyFormDialog.tsx` (create mode) |
+| `updateProperty(propertyId, prevState, formData)` | `PUT /api/properties/:id` | `PropertyFormDialog.tsx` (edit mode) |
+| `deleteProperty(propertyId)` | `DELETE /api/properties/:id` | `DeletePropertyDialog.tsx` |
+| `getMyProperties()` | `GET /api/properties/landlord/my-properties` | `landlord-dashboard/properties/page.tsx` |
+
+### Payload Structure (Create/Update)
+
+```typescript
+{
+  title: string
+  description: string
+  rentPerMonth: number
+  location: string
+  categoryId: string
+  amenities: string[]     // comma-separated in form
+  images: string[]        // comma-separated in form
+  status: "AVAILABLE" | "PENDING" | "RENTED"
+}
+```
+
+### Public Property Actions
+
+**File:** `app/(publicGroup)/properties/_actions/`
+
+| Function | Endpoint | Component |
+|----------|----------|-----------|
+| `getProperty({ query })` | `GET /api/properties?filters` | `PropertyList.tsx` |
+| `getPropertyById(id)` | `GET /api/properties/:id` | `properties/[id]/page.tsx` |
+| `getCategories()` | `GET /api/categories` | `PropertyFilters.tsx`, `PropertyFormDialog.tsx` |
+
+### Query Filters Mapping
+
+Frontend → Backend param names:
+
+| Frontend Param | Backend Param |
+|----------------|---------------|
+| `searchTerm` | `searchTerm` |
+| `location` | `location` |
+| `type` | `categoryId` |
+| `minPrice` | `minRent` |
+| `maxPrice` | `maxRent` |
+| `availability` | `status` (with value mapping) |
 
 ---
 
-## 📋 Rental Request Endpoints
+## 📋 Rental Request Actions
 
-Base path: `/api/rentals`
+**File:** `app/(dashboardGroup)/_actions/rentalRequest.ts`
 
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| POST | `/api/rentals` | Create rental request |  Tenant |
-| GET | `/api/rentals` | Get my requests (role-based) |  Tenant/Landlord |
-| GET | `/api/rentals/:id` | Get single request |  Tenant/Landlord |
-| PATCH | `/api/rentals/landlord/requests/:id` | Approve/Reject request |  Landlord |
-| GET | `/api/rentals/admin/rentals` | Admin: get all rentals |  Admin |
+### Endpoints Used
 
-### Request Statuses
+| Backend Endpoint | Method | Purpose | Auth |
+|------------------|--------|---------|------|
+| `/api/rentals` | POST | Create rental request | Tenant |
+| `/api/rentals` | GET | Get my rentals (role-aware) | Tenant/Landlord |
+| `/api/rentals/:id` | GET | Get single rental | Tenant/Landlord |
+| `/api/rentals/landlord/requests/:id` | PATCH | Approve/Reject | Landlord |
+| `/api/rentals/admin/rentals` | GET | Admin: get all rentals | Admin |
+
+### Server Actions
+
+| Function | Endpoint | Frontend Component |
+|----------|----------|-------------------|
+| `createRentalRequest(payload)` | `POST /api/rentals` | `RequestToRentModal.tsx` |
+| `getMyRentalRequests()` | `GET /api/rentals` | Landlord & Tenant dashboards |
+| `getRentalRequestById(id)` | `GET /api/rentals/:id` | Single rental view |
+| `updateRequestStatus(requestId, status)` | `PATCH /api/rentals/landlord/requests/:id` | `RequestActions.tsx` (Approve/Reject) |
+| `adminGetAllRentals()` | `GET /api/rentals/admin/rentals` | Admin dashboard |
+
+### Payload Structure
+
+```typescript
+{
+  propertyId: string
+  moveInDate: string        // ISO date
+  durationMonths: number
+  message?: string | null
+}
+```
+
+### Status Flow
 
 ```
 PENDING → APPROVED → PAYMENT_PENDING → ACTIVE → COMPLETED
                   → REJECTED
 ```
 
-### Frontend Mapping
+### Cache Tags
 
-| Component/Page | File | Endpoint |
-|----------------|------|----------|
-| Property Details "Request to Rent" | `_components/property/RequestToRentModal.tsx` | `POST /api/rentals` |
-| Landlord Dashboard Overview | `landlord-dashboard/page.tsx` | `GET /api/rentals` |
-| Landlord Requests Page | `landlord-dashboard/requests/page.tsx` | `GET /api/rentals` |
-| Approve/Reject Buttons | `_components/request/RequestActions.tsx` | `PATCH /api/rentals/landlord/requests/:id` |
-| Tenant Dashboard Overview | `tenant-dashboard/page.tsx` | `GET /api/rentals` |
-| Tenant Requests Page | `tenant-dashboard/requests/page.tsx` | `GET /api/rentals` |
-| Admin Rentals Page | `admin-dashboard/rentals/page.tsx` | `GET /api/rentals/admin/rentals` |
-
-**Server Actions:** `_actions/rentalRequest.ts`
+- `my-rental-requests`
+- `landlord-requests`
+- `admin-rentals`
 
 ---
 
-## 💳 Payment Endpoints
+## 💳 Payment Actions
 
-Base path: `/api/payments`
+**File:** `app/(dashboardGroup)/_actions/payment.ts`
 
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| POST | `/api/payments/create` | Create Stripe checkout session |  Tenant |
-| POST | `/api/payments/webhook` | Stripe webhook handler |  Stripe |
-| GET | `/api/payments` | Get my payments (role-based) |  Any |
-| GET | `/api/payments/:id` | Get single payment |  Any |
+### Endpoints Used
 
-### Payment Statuses
+| Backend Endpoint | Method | Purpose | Auth |
+|------------------|--------|---------|------|
+| `/api/payments/create` | POST | Create Stripe checkout session | Tenant |
+| `/api/payments` | GET | Get payments (role-aware) | Any |
+| `/api/payments/:id` | GET | Get single payment | Any |
+| `/api/payments/webhook` | POST | Stripe webhook | Stripe |
+
+### Server Actions
+
+| Function | Endpoint | Frontend Component |
+|----------|----------|-------------------|
+| `createCheckoutSession(rentalRequestId)` | `POST /api/payments/create` | `ProceedToPaymentButton.tsx` |
+| `getMyPayments()` | `GET /api/payments` | Tenant, Landlord & Admin dashboards |
+| `getPaymentById(paymentId)` | `GET /api/payments/:id` | Payment detail view |
+| `refreshPayments()` | Cache revalidation only | `payment/success/page.tsx` |
+
+### Payment Flow
 
 ```
-PENDING → COMPLETED
-        → FAILED
+1. Tenant clicks "Pay Now"
+   → createCheckoutSession(rentalRequestId)
+   → POST /api/payments/create
+   → Backend returns { paymentUrl }
+   
+2. Frontend redirects to Stripe Checkout
+   → window.location.href = paymentUrl
+
+3. User pays on Stripe
+
+4. Stripe redirects to /payment/success
+   → refreshPayments() invalidates cache
+
+5. Stripe fires webhook → POST /api/payments/webhook
+   → Payment.status: PENDING → COMPLETED
+   → Rental.status: PAYMENT_PENDING → ACTIVE
+   → Property.status: PENDING → RENTED
 ```
 
-### Frontend Mapping
+### Cache Tags
 
-| Component/Page | File | Endpoint |
-|----------------|------|----------|
-| "Pay Now" Button | `_components/tenant/ProceedToPaymentButton.tsx` | `POST /api/payments/create` |
-| Payment Success Page | `app/(publicGroup)/payment/success/page.tsx` | Cache revalidation |
-| Payment Cancel Page | `app/(publicGroup)/payment/cancel/page.tsx` | UI only |
-| Tenant Payment History | `tenant-dashboard/payments/page.tsx` | `GET /api/payments` |
-| Landlord Earnings Page | `landlord-dashboard/earnings/page.tsx` | `GET /api/payments` |
-| Admin Revenue Analytics | `admin-dashboard/page.tsx` | `GET /api/payments` |
+- `my-payments`
+- `my-rental-requests`
 
-**Payment Flow:**
-1. Tenant clicks "Pay Now" → `POST /api/payments/create`
-2. Backend creates Stripe session → returns `paymentUrl`
-3. Frontend redirects to Stripe checkout
-4. After payment → Stripe redirects to `/payment/success`
-5. Stripe webhook (`POST /api/payments/webhook`) updates payment & rental status in DB
+### Success/Cancel URLs
 
-**Server Actions:** `_actions/payment.ts`
+```typescript
+success_url: `${APP_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`
+cancel_url: `${APP_URL}/payment/cancel`
+```
 
 ---
 
-## ⭐ Review Endpoints
+## ⭐ Review Actions
 
-Base path: `/api/reviews`
+**File:** `app/(dashboardGroup)/_actions/review.ts`
 
-| Method | Endpoint | Purpose | Auth |
-|--------|----------|---------|------|
-| POST | `/api/reviews` | Create review |  Tenant |
-| GET | `/api/reviews/property/:propertyId` | Get property reviews |  Public |
+### Endpoints Used
 
-### Review Requirements
-- Rental status must be `ACTIVE` or `COMPLETED`
-- Payment status must be `COMPLETED`
-- Can only review once per rental
-- Rating: 1-5 stars
+| Backend Endpoint | Method | Purpose | Auth |
+|------------------|--------|---------|------|
+| `/api/reviews` | POST | Create review | Tenant |
+| `/api/reviews/property/:propertyId` | GET | Get property reviews | Public |
 
-### Frontend Mapping
+### Server Actions
 
-| Component/Page | File | Endpoint |
-|----------------|------|----------|
-| Review Form Modal | `_components/tenant/ReviewFormDialog.tsx` | `POST /api/reviews` |
-| Tenant Reviews Page | `tenant-dashboard/reviews/page.tsx` | From rental requests data |
-| Property Reviews Section | `_components/property/PropertyReviews.tsx` | `GET /api/reviews/property/:id` |
+| Function | Endpoint | Frontend Component |
+|----------|----------|-------------------|
+| `createReview(payload)` | `POST /api/reviews` | `ReviewFormDialog.tsx` |
+| `getReviewsByProperty(propertyId)` | `GET /api/reviews/property/:id` | `PropertyReviews.tsx` |
 
-**Server Actions:** `_actions/review.ts`
+### Payload Structure
 
----
+```typescript
+{
+  propertyId: string
+  rentalRequestId: string
+  rating: number           // 1-5
+  comment?: string | null
+}
+```
 
-## 🛡 Admin Endpoints
+### Review Requirements (Backend Enforced)
 
-Combined admin routes across modules.
+- ✅ Rental status must be `ACTIVE` or `COMPLETED`
+- ✅ Payment status must be `COMPLETED`
+- ✅ Only one review per rental
+- ✅ Only the tenant of that rental can review
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/users` | All users |
-| PATCH | `/api/users/:id/status` | Ban/Unban user |
-| GET | `/api/properties/admin/all` | All properties |
-| GET | `/api/rentals/admin/rentals` | All rentals |
-| GET | `/api/payments` | All payments (admin sees all) |
+### Response Structure (Get by Property)
 
-### Frontend Mapping
+```json
+{
+  "success": true,
+  "data": {
+    "reviews": [...],
+    "averageRating": 4.5,
+    "totalReviews": 10
+  }
+}
+```
 
-| Component/Page | File | Endpoints |
-|----------------|------|-----------|
-| Admin Dashboard | `admin-dashboard/page.tsx` | Multiple (users, properties, rentals, payments) |
-| Users Management | `admin-dashboard/users/page.tsx` | `GET /api/users` |
-| User Actions | `_components/admin/UsersTable.tsx` | `PATCH /api/users/:id/status` |
-| Properties Moderation | `admin-dashboard/properties/page.tsx` | `GET /api/properties` |
-| Rentals Moderation | `admin-dashboard/rentals/page.tsx` | `GET /api/rentals/admin/rentals` |
+### Cache Tags
 
-**Server Actions:** `_actions/admin.ts`
-
----
-
-## 🧩 Server Actions Overview
-
-Complete list of server actions and their purposes.
-
-### Auth Actions
-| File | Function | Endpoint |
-|------|----------|----------|
-| `service/register.ts` | `registerUser()` | `POST /api/auth/register` |
-| `service/login.ts` | `loginUser()` | `POST /api/auth/login` |
-| `service/logout.ts` | `logout()` | `POST /api/auth/logout` |
-| `service/getMe.ts` | `getMe()` | `GET /api/users/me` |
-
-### Property Actions
-| File | Function | Endpoint |
-|------|----------|----------|
-| `_actions/getProperty.ts` | `getProperty()` | `GET /api/properties` |
-| `_actions/getPropertyById.ts` | `getPropertyById()` | `GET /api/properties/:id` |
-| `_actions/getCategories.ts` | `getCategories()` | `GET /api/categories` |
-| `_actions/property.ts` | `createProperty()` | `POST /api/properties` |
-| `_actions/property.ts` | `updateProperty()` | `PUT /api/properties/:id` |
-| `_actions/property.ts` | `deleteProperty()` | `DELETE /api/properties/:id` |
-| `_actions/property.ts` | `getMyProperties()` | `GET /api/properties/landlord/my-properties` |
-
-### Rental Actions
-| File | Function | Endpoint |
-|------|----------|----------|
-| `_actions/rentalRequest.ts` | `createRentalRequest()` | `POST /api/rentals` |
-| `_actions/rentalRequest.ts` | `getMyRentalRequests()` | `GET /api/rentals` |
-| `_actions/rentalRequest.ts` | `getRentalRequestById()` | `GET /api/rentals/:id` |
-| `_actions/rentalRequest.ts` | `updateRequestStatus()` | `PATCH /api/rentals/landlord/requests/:id` |
-
-### Payment Actions
-| File | Function | Endpoint |
-|------|----------|----------|
-| `_actions/payment.ts` | `createCheckoutSession()` | `POST /api/payments/create` |
-| `_actions/payment.ts` | `getMyPayments()` | `GET /api/payments` |
-| `_actions/payment.ts` | `getPaymentById()` | `GET /api/payments/:id` |
-| `_actions/payment.ts` | `refreshPayments()` | Cache revalidation |
-
-### Review Actions
-| File | Function | Endpoint |
-|------|----------|----------|
-| `_actions/review.ts` | `createReview()` | `POST /api/reviews` |
-| `_actions/review.ts` | `getReviewsByProperty()` | `GET /api/reviews/property/:id` |
-
-### Admin Actions
-| File | Function | Endpoint |
-|------|----------|----------|
-| `_actions/admin.ts` | `getAllUsers()` | `GET /api/users` |
-| `_actions/admin.ts` | `toggleUserStatus()` | `PATCH /api/users/:id/status` |
+- `property-reviews-${propertyId}`
+- `my-rental-requests`
 
 ---
 
-## 🔄 Cache & Revalidation Strategy
+## 🛡 Admin Actions
 
-Using Next.js `revalidateTag` for smart caching:
+**File:** `app/(dashboardGroup)/_actions/admin.ts`
 
-| Cache Tag | Invalidated After |
-|-----------|-------------------|
-| `property` | Property create/update/delete |
-| `my-properties` | Landlord CRUD operations |
-| `category` | Category CRUD |
-| `my-rental-requests` | Rental create/status change |
-| `landlord-requests` | Rental create/status change |
-| `my-payments` | Payment success (webhook) |
-| `property-reviews-:id` | Review creation |
-| `admin-users` | User ban/unban |
+### Endpoints Used
+
+| Backend Endpoint | Method | Purpose |
+|------------------|--------|---------|
+| `/api/admin/all-users` | GET | Get all users with filters |
+| `/api/admin/users/:userId` | PATCH | Ban/Unban user |
+| `/api/properties/admin/all` | GET | Get all properties |
+| `/api/rentals/admin/rentals` | GET | Get all rentals |
+| `/api/payments` | GET | Get all payments (admin sees all) |
+
+### Server Actions
+
+| Function | Endpoint | Frontend Component |
+|----------|----------|-------------------|
+| `adminGetAllUsers(query)` | `GET /api/admin/all-users` | `admin-dashboard/users/page.tsx` |
+| `adminToggleUserStatus(userId, activeStatus)` | `PATCH /api/admin/users/:userId` | `UsersTable.tsx` (Ban/Unban button) |
+| `adminGetAllProperties(query)` | `GET /api/properties/admin/all` | `admin-dashboard/properties/page.tsx` |
+| `adminGetAllRentals()` | `GET /api/rentals/admin/rentals` | `admin-dashboard/rentals/page.tsx` |
+| `adminGetAllPayments()` | `GET /api/payments` | Admin analytics |
+
+### `adminGetAllUsers` Query Options
+
+```typescript
+{
+  searchTerm?: string       // Search name/email
+  role?: string             // TENANT | LANDLORD | ADMIN | "all"
+  activeStatus?: string     // ACTIVE | BANNED | "all"
+  page?: string             // Pagination
+  limit?: string            // Items per page (default: 10)
+}
+```
+
+### `adminGetAllProperties` Query Options
+
+```typescript
+{
+  searchTerm?: string
+  status?: string           // AVAILABLE | PENDING | RENTED | "all"
+  page?: string             // Default limit: 12
+}
+```
+
+### Cache Tags
+
+- `admin-users`
+
+---
+
+## 🔄 Cache Revalidation Strategy
+
+Using Next.js `revalidateTag()` for smart cache invalidation.
+
+### Tag Reference
+
+| Cache Tag | Invalidated By | Refreshes |
+|-----------|---------------|-----------|
+| `property` | Property CRUD | Public property listings |
+| `my-properties` | Landlord CRUD | Landlord's property list |
+| `my-rental-requests` | Rental create / status update | Tenant & Landlord dashboards |
+| `landlord-requests` | Rental create / status update | Landlord incoming requests |
+| `admin-rentals` | Admin operations | Admin rental view |
+| `my-payments` | Payment success / cache refresh | Payment history |
+| `property-reviews-${id}` | New review created | Property reviews section |
+| `admin-users` | User ban/unban | Admin user list |
+
+### Time-Based Revalidation
+
+| Function | Revalidate Time |
+|----------|----------------|
+| `getMyRentalRequests()` | 60 seconds |
+| `getMyPayments()` | 60 seconds |
+| `getMyProperties()` | 24 hours |
+| `getReviewsByProperty()` | 5 minutes |
 
 ---
 
 ## 🔒 Authentication Flow
 
 ```
-1. User registers    → POST /api/auth/register
-2. User logs in      → POST /api/auth/login → Sets cookie
-3. All requests      → Cookie: accessToken=<jwt>
-4. Get user data     → GET /api/users/me
-5. Logout            → POST /api/auth/logout → Clears cookie
+┌────────────────────────────────────────────────────┐
+│  1. User Registers                                 │
+│     POST /api/users/register                       │
+│                                                    │
+│  2. Auto Login (inside registerAction)             │
+│     POST /api/auth/login                           │
+│     Returns: { accessToken, refreshToken }         │
+│                                                    │
+│  3. Cookies Set                                    │
+│     - accessToken (24h, httpOnly, sameSite: lax)   │
+│     - refreshToken (7d, httpOnly, sameSite: lax)   │
+│                                                    │
+│  4. JWT Decoded (role-based redirect)              │
+│     - TENANT   → /tenant-dashboard                 │
+│     - LANDLORD → /landlord-dashboard               │
+│     - ADMIN    → /admin-dashboard                  │
+│                                                    │
+│  5. All API Calls                                  │
+│     Cookie: accessToken=<jwt> automatically sent   │
+└────────────────────────────────────────────────────┘
 ```
 
-**Cookie Configuration:**
-- Name: `accessToken`
-- HttpOnly: `true`
-- Secure: `true` (in production)
-- SameSite: `lax`
-- Sent automatically with every request
+### JWT Payload Structure
+
+```typescript
+{
+  userId: string
+  email: string
+  role: "TENANT" | "LANDLORD" | "ADMIN"
+  iat: number
+  exp: number
+}
+```
 
 ---
 
 ## 👥 Role-Based Access
 
-| Role | Access |
-|------|--------|
-| **PUBLIC** | Browse properties, view details, view reviews |
-| **TENANT** | Submit requests, make payments, write reviews |
+| Role | Permissions |
+|------|-------------|
+| **PUBLIC** | View properties, view reviews, register/login |
+| **TENANT** | Submit rental requests, make payments, write reviews |
 | **LANDLORD** | Manage properties, approve/reject requests, view earnings |
 | **ADMIN** | Full platform access, user management, moderation |
 
+### Protected Routes
+
+| Route Pattern | Required Role |
+|---------------|---------------|
+| `/tenant-dashboard/**` | TENANT |
+| `/landlord-dashboard/**` | LANDLORD |
+| `/admin-dashboard/**` | ADMIN |
+| `/properties/**` (browse) | Public |
+| `/payment/**` | Any authenticated |
+
 ---
 
-## 🎯 Complete User Journeys
+## 🎯 User Journeys
 
-### Tenant Journey
-```
-Register → Login → Browse Properties → View Details → 
-Submit Rental Request → Wait for Approval → Pay via Stripe → 
-Rental Active → Write Review
-```
+### 🏘️ Tenant Journey
 
-**Endpoints:** `/register` → `/login` → `/properties` → `/properties/:id` → 
-`POST /rentals` → `POST /payments/create` → `POST /reviews`
-
-### Landlord Journey
 ```
-Register → Login → Dashboard → Add Property → 
-Receive Requests → Approve/Reject → Get Payment → Track Earnings
-```
-
-**Endpoints:** `/register` → `/login` → `GET /rentals` → `POST /properties` → 
-`PATCH /rentals/landlord/requests/:id` → `GET /payments`
-
-### Admin Journey
-```
-Login → Dashboard Overview → View Analytics → 
-Manage Users (Ban/Unban) → Moderate Properties → Monitor Rentals
+1. Register / Login                    → POST /api/users/register + auto login
+2. Browse properties                   → GET /api/properties
+3. View property details               → GET /api/properties/:id
+4. Submit rental request               → POST /api/rentals
+5. Wait for landlord approval          (Status: PENDING)
+6. Landlord approves                   (Status: APPROVED)
+7. Click "Pay Now"                     → POST /api/payments/create
+8. Redirected to Stripe Checkout       
+9. Complete payment                    → Webhook updates status
+10. Rental becomes ACTIVE              (Auto via webhook)
+11. Write review                       → POST /api/reviews
 ```
 
-**Endpoints:** `/login` → `GET /users` → `PATCH /users/:id/status` → 
-`GET /properties/admin/all` → `GET /rentals/admin/rentals`
+### 🏢 Landlord Journey
+
+```
+1. Register / Login                    → POST /api/users/register + auto login
+2. Access dashboard                    → GET /api/properties/landlord/my-properties
+3. Create property listing             → POST /api/properties
+4. View incoming requests              → GET /api/rentals
+5. Approve/Reject request              → PATCH /api/rentals/landlord/requests/:id
+6. Tenant pays                         (Handled by tenant)
+7. Track earnings                      → GET /api/payments
+8. Update/Delete properties            → PUT/DELETE /api/properties/:id
+```
+
+### 🛡 Admin Journey
+
+```
+1. Login as admin                      → POST /api/auth/login
+2. View platform analytics             → Multiple endpoints in parallel
+3. Manage users                        → GET /api/admin/all-users
+4. Ban/Unban user                      → PATCH /api/admin/users/:userId
+5. Moderate properties                 → GET /api/properties/admin/all
+6. Monitor all rentals                 → GET /api/rentals/admin/rentals
+7. Track platform revenue              → GET /api/payments
+```
 
 ---
 
 ## 🛠 Environment Variables
 
+**Frontend (`.env.local`):**
 ```env
-# Backend
+# Backend API
 BACKEND_API_URL=http://localhost:5000
+
+# App URL (for Stripe redirect)
 APP_URL=http://localhost:3000
 
-# Stripe
-STRIPE_SECRET_KEY=sk_test_xxxxx
-STRIPE_WEBHOOK_SECRET=whsec_xxxxx
-STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
+# Stripe (Public)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
+```
+
+**Backend (referenced):**
+```env
+# Server
+PORT=5000
+APP_URL=http://localhost:3000
 
 # Database
 DATABASE_URL=postgresql://...
 
 # JWT
-JWT_SECRET=your_secret_key
+JWT_SECRET=your_secret
 JWT_EXPIRES_IN=7d
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
 ```
 
 ---
 
-## 📊 Data Types Reference
+## 🔥 Common Endpoints Quick Reference
 
-### IUser
-```typescript
-{
-  id: string
-  name: string
-  email: string
-  role: "TENANT" | "LANDLORD" | "ADMIN"
-  activeStatus: "ACTIVE" | "BANNED"
-  profilePhoto: string | null
-  phone: string
-}
+### Public Endpoints (No Auth)
+```
+GET  /api/properties                    - Browse properties
+GET  /api/properties/:id                - Property details
+GET  /api/categories                    - Categories list
+GET  /api/reviews/property/:id          - Property reviews
+POST /api/users/register                - Register
+POST /api/auth/login                    - Login
 ```
 
-### IProperty
-```typescript
-{
-  id: string
-  title: string
-  description: string
-  rentPerMonth: number
-  location: string
-  amenities: string[]
-  images: string[]
-  status: "AVAILABLE" | "PENDING" | "RENTED"
-  landlordId: string
-  categoryId: string
-}
+### Tenant Endpoints
+```
+POST  /api/rentals                      - Create rental request
+GET   /api/rentals                      - My requests
+POST  /api/payments/create              - Start payment
+GET   /api/payments                     - My payment history
+POST  /api/reviews                      - Create review
 ```
 
-### IRentalRequest
-```typescript
-{
-  id: string
-  propertyId: string
-  tenantId: string
-  moveInDate: string
-  durationMonths: number
-  message: string | null
-  status: "PENDING" | "APPROVED" | "REJECTED" | 
-          "PAYMENT_PENDING" | "ACTIVE" | "COMPLETED"
-}
+### Landlord Endpoints
+```
+POST   /api/properties                            - Create property
+PUT    /api/properties/:id                        - Update property
+DELETE /api/properties/:id                        - Delete property
+GET    /api/properties/landlord/my-properties     - My properties
+GET    /api/rentals                               - Incoming requests
+PATCH  /api/rentals/landlord/requests/:id         - Approve/Reject
+GET    /api/payments                              - My earnings
 ```
 
-### IPayment
-```typescript
-{
-  id: string
-  rentalRequestId: string
-  tenantId: string
-  amount: number
-  currency: string
-  status: "PENDING" | "COMPLETED" | "FAILED"
-  stripePaymentIntentId: string | null
-  stripeCheckoutSessionId: string | null
-  paidAt: string | null
-}
+### Admin Endpoints
+```
+GET   /api/admin/all-users              - All users
+PATCH /api/admin/users/:userId          - Ban/Unban
+GET   /api/properties/admin/all         - All properties
+GET   /api/rentals/admin/rentals        - All rentals
+GET   /api/payments                     - All payments
 ```
 
-### IReview
+---
+
+## 📊 TypeScript Types
+
+**File:** `lib/types.ts`
+
+Key types used across actions:
+
 ```typescript
-{
-  id: string
-  propertyId: string
-  tenantId: string
-  rentalRequestId: string
-  rating: number  // 1-5
-  comment: string | null
+type IRole = "TENANT" | "LANDLORD" | "ADMIN"
+
+type IActiveStatus = "ACTIVE" | "BANNED"
+
+type IPropertyStatus = "AVAILABLE" | "PENDING" | "RENTED"
+
+type IRentalRequestStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "PAYMENT_PENDING"
+  | "ACTIVE"
+  | "COMPLETED"
+
+type IPaymentStatus = "PENDING" | "COMPLETED" | "FAILED"
+
+type ActionState = {
+  success: boolean
+  message?: string
+  data?: any
 }
 ```
 
 ---
 
-## 🐛 Common Issues & Solutions
+## 🐛 Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| "Route not found" | Verify backend URL & path prefix |
-| "Not authenticated" | Check cookie is being sent |
-| Filter not working | Ensure frontend param names match backend |
-| Payment webhook not firing | Use Stripe CLI: `stripe listen` |
-| Review submit fails | Check rental & payment status |
-| Cache not updating | Verify `revalidateTag` in server action |
-
----
-
-## 📚 Additional Resources
-
-- [Next.js Server Actions Docs](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
-- [Stripe Checkout Documentation](https://stripe.com/docs/checkout)
-- [Prisma ORM Documentation](https://www.prisma.io/docs)
+| Issue | Likely Cause | Solution |
+|-------|-------------|----------|
+| "Route not found" | Wrong endpoint URL | Check `BACKEND_API_URL` + path |
+| "Not authenticated" | Missing/expired cookie | Login again |
+| "User not logged in!" | Cookie not set/passed | Check `credentials: include` |
+| Filter not working | Param name mismatch | Match frontend → backend params |
+| Payment stuck in PENDING | Webhook not firing | Use `stripe listen` locally |
+| Review submit fails | Status/payment checks | Rental must be ACTIVE, Payment COMPLETED |
+| Cache not updating | Missing `revalidateTag` | Add tag to action + fetch |
+| "Payment must be COMPLETED" | Webhook not processed | Check Stripe webhook config |
 
 ---
 
-## 👨‍💻 Contributing
 
-When adding new endpoints:
-1. Add route to backend module
-2. Create server action in `_actions/`
-3. Update this documentation
-4. Add cache tag if needed
-5. Test with proper role permissions
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Setup environment
+cp .env.example .env.local
+# Edit .env.local with your values
+
+# 3. Run development server
+npm run dev
+
+# 4. (Optional) Stripe webhook testing
+stripe listen --forward-to localhost:5000/api/payments/webhook
+```
+
+
+```
+rent-nest-frontend/
+├── app/
+│   ├── (authGroup)/
+│   │   ├── login/page.tsx              → loginAction
+│   │   └── register/page.tsx           → registerAction
+│   │
+│   ├── (publicGroup)/
+│   │   ├── properties/
+│   │   │   ├── page.tsx                → getProperty
+│   │   │   ├── [id]/page.tsx           → getPropertyById
+│   │   │   ├── _actions/
+│   │   │   │   ├── getProperty.ts
+│   │   │   │   ├── getPropertyById.ts
+│   │   │   │   └── getCategories.ts
+│   │   │   └── _components/
+│   │   │       ├── property/
+│   │   │       │   ├── PropertyList.tsx
+│   │   │       │   ├── PropertyCard.tsx
+│   │   │       │   ├── PropertySearchBar.tsx
+│   │   │       │   ├── PropertyFilters.tsx
+│   │   │       │   ├── PropertyImageGallery.tsx
+│   │   │       │   ├── PropertyInfo.tsx
+│   │   │       │   ├── LandlordCard.tsx
+│   │   │       │   ├── PropertyReviews.tsx
+│   │   │       │   └── RequestToRentModal.tsx  → createRentalRequest
+│   │   │
+│   │   └── payment/
+│   │       ├── success/page.tsx        → refreshPayments
+│   │       └── cancel/page.tsx
+│   │
+│   └── (dashboardGroup)/
+│       ├── layout.tsx                  → getMe (auth check)
+│       ├── _actions/
+│       │   ├── property.ts             → CRUD properties
+│       │   ├── rentalRequest.ts        → Rental operations
+│       │   ├── payment.ts              → Payment operations
+│       │   ├── review.ts               → Review operations
+│       │   └── admin.ts                → Admin operations
+│       │
+│       ├── _components/
+│       │   ├── property/
+│       │   │   ├── PropertyFormDialog.tsx      → create/update
+│       │   │   ├── DeletePropertyDialog.tsx    → delete
+│       │   │   ├── MyPropertyCard.tsx
+│       │   │   └── MyPropertyList.tsx
+│       │   ├── request/
+│       │   │   ├── RequestsTable.tsx
+│       │   │   └── RequestActions.tsx          → updateRequestStatus
+│       │   ├── tenant/
+│       │   │   ├── TenantRequestsTable.tsx
+│       │   │   ├── ProceedToPaymentButton.tsx  → createCheckoutSession
+│       │   │   ├── PaymentsTable.tsx
+│       │   │   └── ReviewFormDialog.tsx        → createReview
+│       │   ├── landlord/
+│       │   │   └── EarningsTable.tsx
+│       │   └── admin/
+│       │       └── UsersTable.tsx              → adminToggleUserStatus
+│       │
+│       ├── landlord-dashboard/
+│       │   ├── page.tsx                → getMyProperties, getMyRentalRequests
+│       │   ├── properties/page.tsx
+│       │   ├── requests/page.tsx
+│       │   └── earnings/page.tsx       → getMyPayments
+│       │
+│       ├── tenant-dashboard/
+│       │   ├── page.tsx
+│       │   ├── requests/page.tsx
+│       │   ├── payments/page.tsx       → getMyPayments
+│       │   └── reviews/page.tsx
+│       │
+│       └── admin-dashboard/
+│           ├── page.tsx                → All admin actions
+│           ├── users/page.tsx          → adminGetAllUsers
+│           ├── properties/page.tsx     → adminGetAllProperties
+│           └── rentals/page.tsx        → adminGetAllRentals
+│
+├── components/shared/
+│   ├── navbar.tsx                      → getMe, logout
+│   └── DashboardSidebar.tsx
+│
+├── service/
+│   ├── getMe.ts
+│   └── logout.ts
+│
+├── lib/
+│   └── types.ts
+│
+├── API_INTEGRATION.md                  ← This file
+└── README.md
+```
 
 ---
 
-**Last Updated:** _Auto-updated with each release_  
-**Version:** 1.0.0  
-**Maintained by:** Zisan Ul Haque
+## 🎯 Contributing Guidelines
+
+When adding new features:
+
+1. **Backend first:** Create the endpoint & document its signature
+2. **Create server action** in appropriate `_actions/` folder
+3. **Update this doc:** Add the endpoint & mapping
+4. **Add cache tags** if the data needs revalidation
+5. **Test with proper role** — verify auth/permission checks
+6. **Handle loading & error states** in UI components
+
+---
+
+## 📝 Version History
+
+- **v1.0.0** — Initial API integration setup
+- Complete auth, property, rental, payment, review, admin flows
+- Cookie-based JWT authentication
+- Stripe payment integration with webhooks
+
+---
+
+**Last Updated:** 2026-01  
+**Maintained by:** Zisan Ul Haque  
+**Project:** RentNest — Property Rental Platform
