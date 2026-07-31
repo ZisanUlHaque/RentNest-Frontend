@@ -17,6 +17,7 @@ import { Button } from "../ui/button"
 import { logout } from "@/service/logout"
 import { useState, useEffect } from "react"
 import { IRole, NavbarProps } from "@/lib/types"
+import Image from "next/image"
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -84,22 +85,30 @@ export function Navbar({ user }: NavbarProps) {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+        className={`fixed top-0 right-0 left-0 z-50 border-b transition-all duration-300 ${
           solid
-            ? "bg-white/95 backdrop-blur-md text-slate-900 border-gray-200 shadow-md"
-            : "bg-transparent text-white border-transparent"
+            ? "border-gray-200 bg-white/95 text-slate-900 shadow-md backdrop-blur-md"
+            : "border-transparent bg-transparent text-white"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/" className="flex items-center gap-2">
-                <div className="size-8 rounded-lg bg-gradient-to-b from-[#1f6feb] via-[#3b82f6] to-[#60a5fa] flex items-center justify-center shadow-lg">
-                  <span className="text-sm font-bold text-white">RN</span>
+                <div className="size-12 overflow-hidden rounded-lg">
+                  <Image
+                    src="/logo.png"
+                    alt="RentNest Logo"
+                    width={32}
+                    height={32}
+                    className="h-full w-full object-cover"
+                    priority
+                  />
                 </div>
+
                 <span
-                  className={`hidden font-bold text-lg sm:inline transition-colors ${
+                  className={`hidden text-lg font-bold transition-colors sm:inline ${
                     solid ? "text-primary" : "text-white"
                   }`}
                 >
@@ -109,21 +118,21 @@ export function Navbar({ user }: NavbarProps) {
             </div>
 
             {/* Nav Links */}
-            <div className="hidden md:absolute md:left-1/2 md:transform md:-translate-x-1/2 md:flex md:items-center md:gap-8">
+            <div className="hidden md:absolute md:left-1/2 md:flex md:-translate-x-1/2 md:transform md:items-center md:gap-8">
               {navItems.map((item) => {
                 const isActive = pathname === item.href
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`transition-colors text-sm font-medium ${
+                    className={`text-sm font-medium transition-colors ${
                       solid
                         ? isActive
                           ? "text-primary"
                           : "text-slate-600 hover:text-primary"
                         : isActive
-                        ? "text-white"
-                        : "text-white/90 hover:text-white"
+                          ? "text-white"
+                          : "text-white/90 hover:text-white"
                     }`}
                   >
                     {item.label}
@@ -137,17 +146,17 @@ export function Navbar({ user }: NavbarProps) {
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <div
-                    className={`cursor-pointer p-2 rounded-full transition ${
+                    className={`cursor-pointer rounded-full p-2 transition ${
                       solid ? "hover:bg-slate-100" : "hover:bg-white/10"
                     }`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
                         solid ? "bg-primary/10" : "bg-white/20"
                       }`}
                     >
                       <User
-                        className={`w-4 h-4 ${
+                        className={`h-4 w-4 ${
                           solid ? "text-primary" : "text-white"
                         }`}
                       />
@@ -167,7 +176,7 @@ export function Navbar({ user }: NavbarProps) {
                       <p className="text-xs text-slate-500">
                         {user.data.profile.email}
                       </p>
-                      <span className="text-[10px] mt-1 inline-block w-fit px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                      <span className="mt-1 inline-block w-fit rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
                         {user.data.profile.role}
                       </span>
                     </div>
@@ -180,9 +189,9 @@ export function Navbar({ user }: NavbarProps) {
                       <DropdownMenuItem
                         key={item.action}
                         onClick={() => handleUserMenuAction(item.action)}
-                        className="text-slate-700 cursor-pointer"
+                        className="cursor-pointer text-slate-700"
                       >
-                        <Icon className="w-4 h-4 mr-2 text-slate-500" />
+                        <Icon className="mr-2 h-4 w-4 text-slate-500" />
                         <span>{item.label}</span>
                       </DropdownMenuItem>
                     )
@@ -191,9 +200,9 @@ export function Navbar({ user }: NavbarProps) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => handleUserMenuAction("logout")}
-                    className="text-red-600 focus:bg-red-50 cursor-pointer"
+                    className="cursor-pointer text-red-600 focus:bg-red-50"
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
+                    <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -204,8 +213,8 @@ export function Navbar({ user }: NavbarProps) {
                   variant={solid ? "default" : "outline"}
                   className={`h-9 cursor-pointer ${
                     solid
-                      ? "bg-primary text-white hover:bg-primary/90 border-none"
-                      : "bg-transparent text-white border-white hover:bg-white/10"
+                      ? "border-none bg-primary text-white hover:bg-primary/90"
+                      : "border-white bg-transparent text-white hover:bg-white/10"
                   }`}
                 >
                   Login

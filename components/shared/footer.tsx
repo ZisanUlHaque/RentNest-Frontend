@@ -2,6 +2,7 @@
 "use client";
 
 import { ChevronUp, Mail, Phone, MapPin, Send, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   FaXTwitter,
@@ -114,12 +115,17 @@ export default function Footer() {
             <div className="sm:col-span-2 md:col-span-3 lg:col-span-4">
               <Link
                 href="/"
-                className="flex items-center justify-center sm:justify-start gap-3 mb-4 sm:mb-6"
+                className="flex items-center justify-center sm:justify-start gap-1 mb-4 sm:mb-6"
               >
-                <div className="size-9 sm:size-10 rounded-lg bg-gradient-to-b from-[#1f6feb] via-[#3b82f6] to-[#60a5fa] flex items-center justify-center shadow-lg">
-                  <span className="text-sm sm:text-base font-bold text-white">
-                    PP
-                  </span>
+                <div className="size-12 overflow-hidden rounded-lg">
+                  <Image
+                    src="/logo.png"
+                    alt="RentNest Logo"
+                    width={32}
+                    height={32}
+                    className="h-full w-full object-cover"
+                    priority
+                  />
                 </div>
                 <span className="text-xl sm:text-2xl font-bold text-white tracking-wide">
                   RentNest

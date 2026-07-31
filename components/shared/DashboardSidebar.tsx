@@ -49,7 +49,6 @@ const menuConfig: Record<IRole, MenuItem[]> = {
     { label: "All Users", href: "/admin-dashboard/users", icon: Users },
     { label: "All Properties", href: "/admin-dashboard/properties", icon: Building2 },
     { label: "All Rentals", href: "/admin-dashboard/rentals", icon: FileText },
-    { label: "Analytics", href: "/admin-dashboard/analytics", icon: ChartBar },
   ],
 }
 
