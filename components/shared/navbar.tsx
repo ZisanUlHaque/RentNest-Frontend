@@ -31,9 +31,8 @@ const userMenuItems = [
   { label: "Settings", icon: Settings, action: "settings" },
 ] as const
 
-// ✅ Role → Dashboard route map (cleaner than if/else chain)
 const dashboardRoutes: Record<IRole, string> = {
-  TENANT: "/dashboard",
+  TENANT: "/tenant-dashboard",
   LANDLORD: "/landlord-dashboard",
   ADMIN: "/admin-dashboard",
 }
@@ -54,7 +53,6 @@ export function Navbar({ user }: NavbarProps) {
   }, [])
 
   const handleUserMenuAction = async (action: string) => {
-    // ✅ Guard: only run if user is logged in
     if (!user.success) return
 
     const role = user.data.profile.role

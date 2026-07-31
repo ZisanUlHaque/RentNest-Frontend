@@ -53,12 +53,12 @@ export async function proxy(request: NextRequest) {
     }
 
     if(accessToken && AUTH_ROUTES.includes(pathname)){
-        if(userRole === "USER"){
-            return NextResponse.redirect(new URL('/dashboard', request.url));
+        if(userRole === "TENANT"){
+            return NextResponse.redirect(new URL('/tenant-dashboard', request.url));
         }else if(userRole === "ADMIN"){
             return NextResponse.redirect(new URL('/admin-dashboard', request.url));
-        }else if(userRole === "AUTHOR"){
-            return NextResponse.redirect(new URL('/author-dashboard', request.url));
+        }else if(userRole === "LANDLORD"){
+            return NextResponse.redirect(new URL('/landlord-dashboard', request.url));
         }else{
             return NextResponse.redirect(new URL('/', request.url));
         }
@@ -74,11 +74,11 @@ export async function proxy(request: NextRequest) {
     }
 
     // Authorization : Role based access control
-    if(pathname.startsWith("/dashboard") && userRole !== "USER"){
+    if(pathname.startsWith("/tenant-dashboard") && userRole !== "TENANT"){
         return NextResponse.redirect(new URL('/not-found', request.url));
     }else if(pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN"){
         return NextResponse.redirect(new URL('/not-found', request.url));
-    }else if(pathname.startsWith("/author-dashboard") && userRole !== "AUTHOR"){
+    }else if(pathname.startsWith("/landlord-dashboard") && userRole !== "LANDLORD"){
         return NextResponse.redirect(new URL('/not-found', request.url));
     }
     
