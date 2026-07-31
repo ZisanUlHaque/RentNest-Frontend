@@ -54,7 +54,6 @@ const menuConfig: Record<IRole, MenuItem[]> = {
 
 const bottomItems: MenuItem[] = [
   { label: "Browse Properties", href: "/properties", icon: Home },
-  { label: "Settings", href: "/settings", icon: Settings },
 ]
 
 export function DashboardSidebar({ role }: Props) {

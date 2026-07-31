@@ -10,7 +10,6 @@ const DashboardLayout = async ({
 }) => {
   const user = await getMe()
 
-  // ✅ Redirect if not logged in
   if (!user?.success) {
     redirect("/login")
   }
@@ -20,7 +19,6 @@ const DashboardLayout = async ({
       {/* Navbar */}
       <Navbar user={user} />
 
-      {/* Main Layout: Sidebar + Content */}
       <div className="flex flex-1 pt-16">
         {/* Sidebar */}
         <DashboardSidebar role={user.data.profile.role} />
