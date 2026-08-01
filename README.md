@@ -12,7 +12,7 @@ A modern, full-stack rental marketplace connecting landlords with tenants throug
 ![Stripe](https://img.shields.io/badge/Stripe-Integrated-635BFF?style=for-the-badge&logo=stripe)
 ![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?style=for-the-badge&logo=prisma)
 
-[🌐 Live Demo](https://rent-nest-frontend.vercel.app) • [📘 API Docs](./API_INTEGRATION.md) • [🔗 Backend Repo](https://github.com/ZisanUlHaque/RentNest)
+[🌐 Live Demo](https://rent-nest-frontend-psi.vercel.app) • [📘 API Docs](./API_INTEGRATION.md) • [🔗 Backend Repo](https://github.com/ZisanUlHaque/RentNest)
 
 </div>
 
