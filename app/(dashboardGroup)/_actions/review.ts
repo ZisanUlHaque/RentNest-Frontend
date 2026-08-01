@@ -28,11 +28,35 @@ export const createReview = async (payload: {
   const result = await res.json()
 
   if (result.success) {
-    revalidateTag("my-rental-requests", "max")
-    revalidateTag(`property-reviews-${payload.propertyId}`, "max")
+    revalidateTag(`property-reviews-${payload.propertyId}`,"max")
+    revalidateTag("my-reviews","max") // ✅ নতুন tag যোগ হলো
   }
 
   return result
+}
+
+// ✅ NEW: নিজের reviews আনার জন্য
+export const getMyReviews = async () => {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get("accessToken")?.value
+
+  if (!accessToken) {
+    return { success: false, data: [] }
+  }
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/reviews/my-reviews`,
+    {
+      headers: {
+        Cookie: `accessToken=${accessToken}`,
+      },
+      next: {
+        tags: ["my-reviews"],
+      },
+    }
+  )
+
+  return res.json()
 }
 
 export const getReviewsByProperty = async (propertyId: string) => {

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   DropdownMenu,
@@ -7,80 +7,92 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import { LayoutDashboard, LogOut, Settings, User } from "lucide-react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { Button } from "../ui/button"
-import { logout } from "@/service/logout"
-import { useState, useEffect } from "react"
-import { IRole, NavbarProps } from "@/lib/types"
-import Image from "next/image"
+import {
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  User,
+  Home as HomeIcon,
+  Building2,
+  Star,
+  Phone,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { logout } from "@/service/logout";
+import { useState, useEffect } from "react";
+import { IRole, NavbarProps } from "@/lib/types";
+import Image from "next/image";
 
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Property", href: "/properties" },
   { label: "Services", href: "/services" },
   { label: "Contact", href: "/contact" },
-]
+];
+
+const mobileNavItems = [
+  { label: "Home", href: "/", icon: HomeIcon },
+  { label: "Property", href: "/properties", icon: Building2 },
+  { label: "Services", href: "/services", icon: Star },
+  { label: "Contact", href: "/contact", icon: Phone },
+];
 
 const userMenuItems = [
   { label: "Dashboard", icon: LayoutDashboard, action: "dashboard" },
   { label: "Profile", icon: User, action: "profile" },
   { label: "Settings", icon: Settings, action: "settings" },
-] as const
+] as const;
 
 const dashboardRoutes: Record<IRole, string> = {
   TENANT: "/tenant-dashboard",
   LANDLORD: "/landlord-dashboard",
   ADMIN: "/admin-dashboard",
-}
+};
 
 export function Navbar({ user }: NavbarProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isScrolled, setIsScrolled] = useState(false)
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const isHome = pathname === "/"
-  const solid = !isHome || isScrolled
+  const isHome = pathname === "/";
+  const solid = !isHome || isScrolled;
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20)
-    handleScroll()
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleUserMenuAction = async (action: string) => {
-    if (!user.success) return
+    if (!user?.success) return;
 
-    const role = user.data.profile.role
+    const role = user.data.profile.role;
 
     switch (action) {
       case "dashboard":
-        router.push(dashboardRoutes[role] ?? "/dashboard")
-        break
-
+        router.push(dashboardRoutes[role] ?? "/dashboard");
+        break;
       case "profile":
-        router.push("/profile")
-        break
-
+        router.push("/profile");
+        break;
       case "settings":
-        router.push("/settings")
-        break
-
+        router.push("/settings");
+        break;
       case "logout":
-        await logout()
-        toast.success("User Logged Out Successfully!")
-        router.push("/login")
-        break
-
+        await logout();
+        toast.success("User Logged Out Successfully!");
+        router.push("/login");
+        break;
       default:
-        break
+        break;
     }
-  }
+  };
 
   return (
     <>
@@ -106,7 +118,6 @@ export function Navbar({ user }: NavbarProps) {
                     priority
                   />
                 </div>
-
                 <span
                   className={`hidden text-lg font-bold transition-colors sm:inline ${
                     solid ? "text-primary" : "text-white"
@@ -117,10 +128,9 @@ export function Navbar({ user }: NavbarProps) {
               </Link>
             </div>
 
-            {/* Nav Links */}
             <div className="hidden md:absolute md:left-1/2 md:flex md:-translate-x-1/2 md:transform md:items-center md:gap-8">
               {navItems.map((item) => {
-                const isActive = pathname === item.href
+                const isActive = pathname === item.href;
                 return (
                   <Link
                     key={item.href}
@@ -137,7 +147,7 @@ export function Navbar({ user }: NavbarProps) {
                   >
                     {item.label}
                   </Link>
-                )
+                );
               })}
             </div>
 
@@ -184,7 +194,7 @@ export function Navbar({ user }: NavbarProps) {
                   <DropdownMenuSeparator />
 
                   {userMenuItems.map((item) => {
-                    const Icon = item.icon
+                    const Icon = item.icon;
                     return (
                       <DropdownMenuItem
                         key={item.action}
@@ -194,7 +204,7 @@ export function Navbar({ user }: NavbarProps) {
                         <Icon className="mr-2 h-4 w-4 text-slate-500" />
                         <span>{item.label}</span>
                       </DropdownMenuItem>
-                    )
+                    );
                   })}
 
                   <DropdownMenuSeparator />
@@ -225,7 +235,67 @@ export function Navbar({ user }: NavbarProps) {
         </div>
       </nav>
 
+      <nav className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+        <div className="flex items-center justify-around bg-black/85 backdrop-blur-lg rounded-2xl px-2 py-2.5 shadow-2xl border border-gray-800">
+          {mobileNavItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
+                  isActive
+                    ? "text-yellow-400"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Icon
+                  size={20}
+                  strokeWidth={isActive ? 2.5 : 2}
+                />
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+
+          {/* Account/Login */}
+          {user?.success ? (
+            <button
+              onClick={() => handleUserMenuAction("dashboard")}
+              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
+                pathname.includes("dashboard")
+                  ? "text-yellow-400"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              <User
+                size={20}
+                strokeWidth={pathname.includes("dashboard") ? 2.5 : 2}
+              />
+              <span className="text-[10px] font-medium">Account</span>
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
+                pathname === "/login"
+                  ? "text-yellow-400"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              <User
+                size={20}
+                strokeWidth={pathname === "/login" ? 2.5 : 2}
+              />
+              <span className="text-[10px] font-medium">Login</span>
+            </Link>
+          )}
+        </div>
+      </nav>
+
+      {/* Non-home pages spacing */}
       {!isHome && <div className="h-16" />}
     </>
-  )
+  );
 }

@@ -1,14 +1,12 @@
 export function HowItWorks() {
   return (
     <section className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-background via-muted/20 to-background">
-      {/* Decorative background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-20 left-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
         <div className="absolute bottom-20 right-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto">
-        {/* ═══════ Header ═══════ */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <div className="flex justify-center mb-6">
             <div className="w-12 h-1 rounded-full bg-primary" />
@@ -22,9 +20,7 @@ export function HowItWorks() {
           </p>
         </div>
 
-        {/* ═══════ Steps ═══════ */}
         <div className="relative">
-          {/* Dotted Path Connectors (Desktop only) */}
           <DottedConnectors />
 
           {/* Steps Grid */}
@@ -59,7 +55,6 @@ export function HowItWorks() {
   )
 }
 
-/* ═══════ Dotted Path Connectors ═══════ */
 function DottedConnectors() {
   return (
     <div className="absolute inset-0 hidden lg:block pointer-events-none">
@@ -103,7 +98,6 @@ function DottedConnectors() {
   )
 }
 
-/* ═══════ Step 1: Search Illustration (Browser Window) ═══════ */
 function SearchIllustration() {
   return (
     <div className="relative w-52">
@@ -150,7 +144,6 @@ function SearchIllustration() {
   )
 }
 
-/* ═══════ Step 2: Request Illustration (Stacked cards) ═══════ */
 function RequestIllustration() {
   return (
     <div className="relative w-52 h-40">
@@ -184,7 +177,6 @@ function RequestIllustration() {
   )
 }
 
-/* ═══════ Step 3: Payment Illustration (Two overlapping browser windows) ═══════ */
 function PaymentIllustration() {
   return (
     <div className="relative w-52 h-40">
@@ -223,7 +215,6 @@ function PaymentIllustration() {
   )
 }
 
-/* ═══════ Step 4: Move In Illustration (Documents with checkmark) ═══════ */
 function MoveInIllustration() {
   return (
     <div className="relative w-52 h-40">

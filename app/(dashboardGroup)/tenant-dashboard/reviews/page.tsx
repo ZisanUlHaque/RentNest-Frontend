@@ -1,22 +1,21 @@
 import { Card } from "@/components/ui/card"
-import { getMyRentalRequests } from "../../_actions/rentalRequest"
-import { IRentalRequest, IReview } from "@/lib/types"
+import { getMyReviews } from "../../_actions/review"
+import { IReview } from "@/lib/types"
 import { Star, MessageSquare } from "lucide-react"
 import Link from "next/link"
 
-export default async function MyReviewsPage() {
-  const res = await getMyRentalRequests()
-  const requests: IRentalRequest[] = res?.data ?? []
+type MyReview = IReview & {
+  property?: {
+    id: string
+    title: string
+    images?: string[]
+    location?: string
+  }
+}
 
-  // Extract reviews from rental requests
-  const reviews: (IReview & { propertyTitle?: string; propertyId?: string })[] =
-    requests
-      .filter((r) => r.review)
-      .map((r) => ({
-        ...(r.review as IReview),
-        propertyTitle: r.property?.title,
-        propertyId: r.propertyId,
-      }))
+export default async function MyReviewsPage() {
+  const res = await getMyReviews()
+  const reviews: MyReview[] = res?.data ?? []
 
   return (
     <div className="space-y-6">
@@ -44,10 +43,10 @@ export default async function MyReviewsPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <Link
-                  href={`/properties/${review.propertyId}`}
+                  href={`/properties/${review.property?.id}`}
                   className="font-semibold hover:text-primary line-clamp-1"
                 >
-                  {review.propertyTitle}
+                  {review.property?.title ?? "Property"}
                 </Link>
                 <div className="flex gap-0.5">
                   {[1, 2, 3, 4, 5].map((star) => (
