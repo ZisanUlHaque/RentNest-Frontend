@@ -29,13 +29,12 @@ export const createReview = async (payload: {
 
   if (result.success) {
     revalidateTag(`property-reviews-${payload.propertyId}`,"max")
-    revalidateTag("my-reviews","max") // ✅ নতুন tag যোগ হলো
+    revalidateTag("my-reviews","max") 
   }
 
   return result
 }
 
-// ✅ NEW: নিজের reviews আনার জন্য
 export const getMyReviews = async () => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value

@@ -18,7 +18,6 @@ type Props = {
 }
 
 export function EarningsChart({ payments }: Props) {
-  // ═══ Build last 6 months data ═══
   const now = new Date()
   const months: { month: string; earnings: number; count: number }[] = []
 

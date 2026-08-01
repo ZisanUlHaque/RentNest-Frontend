@@ -9,13 +9,12 @@ import {
 } from "lucide-react"
 import { getMyRentalRequests } from "../_actions/rentalRequest"
 import { getMyPayments } from "../_actions/payment"
-import { getMyReviews } from "../_actions/review" // ✅ import করুন
+import { getMyReviews } from "../_actions/review" 
 import { IPayment, IRentalRequest, IReview } from "@/lib/types"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export default async function TenantDashboardPage() {
-  // ✅ 3টা API একসাথে call করুন
   const [requestsRes, paymentsRes, reviewsRes] = await Promise.all([
     getMyRentalRequests(),
     getMyPayments(),
@@ -24,12 +23,12 @@ export default async function TenantDashboardPage() {
 
   const requests: IRentalRequest[] = requestsRes?.data ?? []
   const payments: IPayment[] = paymentsRes?.data ?? []
-  const reviews: IReview[] = reviewsRes?.data ?? [] // ✅ reviews আনুন
+  const reviews: IReview[] = reviewsRes?.data ?? [] 
 
   const totalRequests = requests.length
   const pendingRequests = requests.filter((r) => r.status === "PENDING").length
   const activeRentals = requests.filter((r) => r.status === "ACTIVE").length
-  const totalReviews = reviews.length // ✅ actual review count
+  const totalReviews = reviews.length 
   const totalPaid = payments
     .filter((p) => p.status === "COMPLETED")
     .reduce((sum, p) => sum + p.amount, 0)
@@ -119,13 +118,6 @@ export default async function TenantDashboardPage() {
           href="/tenant-dashboard/payments"
           icon={CreditCard}
           count={payments.length}
-        />
-        <QuickAccessCard
-          title="Reviews"
-          description="Review completed rentals"
-          href="/tenant-dashboard/reviews"
-          icon={Star}
-          count={totalReviews} 
         />
       </div>
 

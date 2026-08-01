@@ -17,7 +17,6 @@ export default async function ProfilePage() {
 
   const profile = user.data.profile
 
-  // Fetch stats based on role
   const [propertiesRes, rentalsRes, paymentsRes] = await Promise.all([
     profile.role === "LANDLORD"
       ? getMyProperties().catch(() => ({ data: [] }))
@@ -41,7 +40,6 @@ export default async function ProfilePage() {
 
       {/* Grid: Info + Security */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Personal Info (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
           <ProfileInfoForm user={profile} />
           <ProfileDangerZone />

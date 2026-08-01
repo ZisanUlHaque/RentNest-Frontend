@@ -10,7 +10,7 @@ export default function ErrorPage({
   unstable_retry: () => void
 }) {
   useEffect(() => {
-    console.error(error)
+    // console.error(error)
   }, [error])
  
   return (

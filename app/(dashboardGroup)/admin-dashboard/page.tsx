@@ -50,7 +50,6 @@ export default async function AdminDashboardPage() {
   const rentals = toArray<IRentalRequest>(rentalsRes)
   const payments = toArray<IPayment>(paymentsRes)
 
-  // ═══ Stats ═══
   const totalUsers = users.length
   const tenants = users.filter((u) => u.role === "TENANT").length
   const landlords = users.filter((u) => u.role === "LANDLORD").length

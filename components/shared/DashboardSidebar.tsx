@@ -36,7 +36,6 @@ const menuConfig: Record<IRole, MenuItem[]> = {
     { label: "Overview", href: "/tenant-dashboard", icon: LayoutDashboard },
     { label: "My Requests", href: "/tenant-dashboard/requests", icon: FileText },
     { label: "Payments", href: "/tenant-dashboard/payments", icon: CreditCard },
-    { label: "My Reviews", href: "/tenant-dashboard/reviews", icon: Star },
   ],
   LANDLORD: [
     { label: "Overview", href: "/landlord-dashboard", icon: LayoutDashboard },

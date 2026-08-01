@@ -1,4 +1,3 @@
-// src/components/home/WhyChooseUsSection.tsx
 
 import Link from "next/link";
 import { ChevronRight, Home, Award, Wallet, Users } from "lucide-react";

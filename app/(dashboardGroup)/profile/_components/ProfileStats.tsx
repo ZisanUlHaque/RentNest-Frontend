@@ -131,5 +131,4 @@ export function ProfileStats({ user, properties, rentals, payments }: Props) {
   )
 }
 
-// Fix: Calendar import
 import { Calendar } from "lucide-react"

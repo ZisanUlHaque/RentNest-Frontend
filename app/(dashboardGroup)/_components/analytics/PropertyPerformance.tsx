@@ -21,7 +21,6 @@ export function PropertyPerformance({
   requests,
   payments,
 }: Props) {
-  // Calculate performance for each property
   const performance = properties
     .map((property) => {
       const propertyRequests = requests.filter(

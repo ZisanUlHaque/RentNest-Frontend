@@ -17,12 +17,10 @@ type Props = {
 }
 
 export function QuickStats({ properties, requests, payments }: Props) {
-  // ═══ Total Revenue ═══
   const totalRevenue = payments
     .filter((p) => p.status === "COMPLETED")
     .reduce((sum, p) => sum + Number(p.amount ?? 0), 0)
 
-  // ═══ This Month Revenue ═══
   const now = new Date()
   const thisMonthRevenue = payments
     .filter((p) => {
@@ -35,7 +33,6 @@ export function QuickStats({ properties, requests, payments }: Props) {
     })
     .reduce((sum, p) => sum + Number(p.amount ?? 0), 0)
 
-  // ═══ Last Month Revenue (for trend %) ═══
   const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1)
   const lastMonthRevenue = payments
     .filter((p) => {
@@ -55,7 +52,6 @@ export function QuickStats({ properties, requests, payments }: Props) {
       ? 100
       : 0
 
-  // ═══ Pending Payouts ═══
   const pendingPayouts = requests
     .filter((r) => r.status === "APPROVED" || r.status === "PAYMENT_PENDING")
     .reduce(
@@ -64,7 +60,6 @@ export function QuickStats({ properties, requests, payments }: Props) {
       0
     )
 
-  // ═══ Active Tenants ═══
   const activeTenants = requests.filter(
     (r) => r.status === "ACTIVE"
   ).length

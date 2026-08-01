@@ -20,14 +20,13 @@ export function ProceedToPaymentButton({ rentalRequestId, isRetry }: Props) {
     startTransition(async () => {
       const res = await createCheckoutSession(rentalRequestId)
 
-      // ✅ Handle both `url` and `paymentUrl` keys
       const checkoutUrl = res?.data?.url ?? res?.data?.paymentUrl
 
       if (res.success && checkoutUrl) {
         window.location.href = checkoutUrl
       } else {
         toast.error(res.message ?? "Failed to create checkout session")
-        router.refresh() // Get fresh status
+        router.refresh() 
       }
     })
   }

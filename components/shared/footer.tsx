@@ -1,4 +1,3 @@
-// components/shared/Footer.tsx
 "use client";
 
 import { ChevronUp, Mail, Phone, MapPin, Send, ArrowRight } from "lucide-react";

@@ -21,7 +21,6 @@ export default async function EarningsPage() {
   const payments: IPayment[] = paymentsRes?.data ?? []
   const requests: IRentalRequest[] = requestsRes?.data ?? []
 
-  // ═══ Calculate Stats ═══
   const completedPayments = payments.filter((p) => p.status === "COMPLETED")
 
   const totalEarnings = completedPayments.reduce(

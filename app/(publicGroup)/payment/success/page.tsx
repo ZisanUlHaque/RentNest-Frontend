@@ -1,4 +1,4 @@
-"use client" // ✅ Client Component এ রূপান্তর করো
+"use client" 
 
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,6 @@ import { refreshPayments } from "@/app/(dashboardGroup)/_actions/payment"
 export default function PaymentSuccessPage() {
   
   useEffect(() => {
-    // ✅ পেজ মাউন্ট হওয়ার পর রিফ্রেশ কল করো
     const clearCache = async () => {
       await refreshPayments()
     }

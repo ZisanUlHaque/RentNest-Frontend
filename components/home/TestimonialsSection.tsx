@@ -1,4 +1,3 @@
-// src/components/home/TestimonialsSection.tsx
 
 import Image from "next/image";
 
