@@ -1,37 +1,50 @@
-import { ContactFormLeft } from "./_components/ContactForm";
-import { ContactIllustration } from "./_components/ContactInfo";
+// app/(publicGroup)/contact/page.tsx (or wherever your contact page lives)
+
+import { ContactInfoLeft } from "./_components/ContactForm";
+import { ContactFormRight } from "./_components/ContactInfo";
+import { OurOffices } from "./_components/OurOffices";
 
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/70 via-primary to-primary/80 flex items-center justify-center py-20 px-4 relative overflow-hidden">
-      {/* Decorative background shapes */}
-      <div className="absolute top-10 left-20 size-64 rounded-full bg-white/10 blur-2xl" />
-      <div className="absolute bottom-10 right-20 size-96 rounded-full bg-white/10 blur-3xl" />
-      <div className="absolute top-1/2 left-1/3 size-48 rounded-full bg-white/5 blur-2xl" />
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="pt-16 pb-8 text-center">
+        <h1 className="text-2xl font-bold text-primary inline-block">
+          Contact us
+          <span className="block w-12 h-1 bg-primary mx-auto mt-2 rounded-full" />
+        </h1>
+      </div>
 
-      {/* Wavy card container */}
-      <div className="relative max-w-6xl w-full">
-        {/* Main White Card with wavy edges */}
-        <div className="relative bg-card rounded-4xl shadow-2xl overflow-hidden">
-          {/* Wave decorations on left side */}
-          <div className="absolute -left-16 top-1/4 size-32 rounded-full bg-primary/80" />
-          <div className="absolute -left-8 bottom-1/4 size-24 rounded-full bg-primary/80" />
+      {/* Curved Top Wave */}
+      <div className="relative">
+        <svg
+          className="w-full h-16 -mb-1 text-gray-50"
+          viewBox="0 0 1440 60"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="currentColor"
+            d="M0,30 Q360,0 720,30 T1440,30 L1440,60 L0,60 Z"
+          />
+        </svg>
+      </div>
 
-          {/* Wave decorations on right side */}
-          <div className="absolute -right-20 top-1/3 size-40 rounded-full bg-primary/80" />
-          <div className="absolute -right-12 bottom-1/4 size-28 rounded-full bg-primary/80" />
+      {/* Main Contact Section */}
+      <section className="bg-gray-50 py-16 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            {/* Left: Info + Illustration */}
+            <ContactInfoLeft />
 
-          {/* Content */}
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-10 sm:p-14 lg:p-16">
-            {/* Left: Form */}
-            <ContactFormLeft />
-
-            {/* Right: Illustration + Info */}
-            <ContactIllustration />
+            {/* Right: Form */}
+            <ContactFormRight />
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Our Offices */}
+      <OurOffices />
     </div>
-  )
+  );
 }

@@ -12,9 +12,9 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { IUser } from "@/lib/types"
-import { BanUserButton } from "./BanUserButton"
 import { Users } from "lucide-react"
 import { Pagination } from "./Pagination"
+import { BanUserButton } from "./BanUserButton"
 
 type Props = {
   users: IUser[]

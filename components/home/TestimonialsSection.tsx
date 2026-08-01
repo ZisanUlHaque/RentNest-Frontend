@@ -1,177 +1,104 @@
 // src/components/home/TestimonialsSection.tsx
 
-"use client";
-
-import { useState } from "react";
 import Image from "next/image";
-import { Star, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface Testimonial {
   id: number;
-  rating: number;
+  name: string;
+  avatar: string;
   content: string;
-  authorName: string;
-  authorTitle: string;
-  authorImage: string;
-  propertyImage: string;
-  secondaryImage: string;
+  bgColor: string;
 }
 
 const testimonials: Testimonial[] = [
   {
     id: 1,
-    rating: 5,
+    name: "Tunde O.",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
     content:
-      "From our first meeting, the team understood exactly what we were looking for and the timeline we were under. They provided weekly market updates, arranged pre-screened showings.",
-    authorName: "Jessica Liu",
-    authorTitle: "Senior Communications Manager",
-    authorImage:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop",
-    propertyImage:
-      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=500&fit=crop",
-    secondaryImage:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop",
+      "Loft was a breath of fresh air. The apartment was neat, well-furnished, and in a secure area. I stayed for a work trip in Lekki and didn't want to leave. Great value for money!",
+    bgColor: "#EDE4FF",
   },
   {
     id: 2,
-    rating: 5,
+    name: "Chinelo A.",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
     content:
-      "The RentBridge platform made our home search seamless. Every property we viewed matched our criteria perfectly, and the landlords were verified and responsive throughout.",
-    authorName: "Michael Rahman",
-    authorTitle: "Software Engineer",
-    authorImage:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-    propertyImage:
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&h=500&fit=crop",
-    secondaryImage:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "From check-in to check-out, everything was smooth. The place was so cozy and had this modern vibe. I even hosted a small hangout with friends. Will definitely book again.",
+    bgColor: "#FCE7E7",
   },
   {
     id: 3,
-    rating: 5,
+    name: "Idris B.",
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop",
     content:
-      "As a first-time renter, I was nervous about the process. RentBridge walked me through every step, and I found my dream apartment within two weeks. Truly a game-changer.",
-    authorName: "Sarah Ahmed",
-    authorTitle: "Marketing Director",
-    authorImage:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
-    propertyImage:
-      "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&h=500&fit=crop",
-    secondaryImage:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
+      "I needed a quiet place to relax and Loft delivered. The location was central, the Wi-Fi was strong, and the host was super responsive. 10/10 experience.",
+    bgColor: "#FDF6D9",
   },
 ];
 
 export default function TestimonialsSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const testimonial = testimonials[currentIndex];
-
-  const goPrev = () =>
-    setCurrentIndex((prev) =>
-      prev === 0 ? testimonials.length - 1 : prev - 1
-    );
-
-  const goNext = () =>
-    setCurrentIndex((prev) =>
-      prev === testimonials.length - 1 ? 0 : prev + 1
-    );
-
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-16 sm:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 bg-chart-3 text-white px-4 py-2 rounded-lg text-sm font-medium mb-8">
+          <span className="text-base leading-none">✦</span>
+          Ratings & Reviews
+        </div>
+
         {/* Heading */}
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-12">
-          Trusted by Homeowners Like You
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-20 tracking-tight">
+          Real Stories. Real People. Real Loft.
         </h2>
 
-        {/* Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left: Main Property Image */}
-          <div className="lg:col-span-4">
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-md">
-              <Image
-                src={testimonial.propertyImage}
-                alt="Happy homeowners"
-                fill
-                className="object-cover transition-all duration-500"
-                key={`main-${testimonial.id}`}
-              />
-            </div>
-          </div>
-
-          {/* Middle: Testimonial Content */}
-          <div className="lg:col-span-5 space-y-5">
-            {/* Stars */}
-            <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  size={20}
-                  className={
-                    i < testimonial.rating
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-200 fill-gray-200"
-                  }
-                />
-              ))}
-            </div>
-
-            {/* Quote */}
-            <p className="text-gray-700 text-lg leading-relaxed">
-              {testimonial.content}
-            </p>
-
-            {/* Author */}
-            <div className="flex items-center gap-3 pt-2">
-              <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border border-gray-100">
-                <Image
-                  src={testimonial.authorImage}
-                  alt={testimonial.authorName}
-                  fill
-                  className="object-cover"
-                />
+        {/* Cards - Staggered Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 relative">
+          {testimonials.map((testimonial, index) => (
+            <div
+              key={testimonial.id}
+              style={{ backgroundColor: testimonial.bgColor }}
+              className={`
+                rounded-3xl p-8 pt-16 relative
+                transition-all duration-300 hover:-translate-y-2 hover:shadow-lg
+                ${index === 0 ? "md:mt-0" : ""}
+                ${index === 1 ? "md:mt-20" : ""}
+                ${index === 2 ? "md:mt-10" : ""}
+              `}
+            >
+              {/* Avatar - Overlapping top */}
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full overflow-hidden border-4 border-white shadow-md relative shrink-0 bg-gray-100">
+                  <Image
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {testimonial.authorName}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {testimonial.authorTitle}
-                </p>
+
+              {/* Name centered under avatar */}
+              <p className="absolute top-8 left-1/2 -translate-x-1/2 translate-x-10 font-bold text-gray-900 whitespace-nowrap">
+                {testimonial.name}
+              </p>
+
+              {/* Content */}
+              <p className="text-gray-700 text-[15px] leading-relaxed mt-4">
+                {testimonial.content}
+              </p>
+
+              {/* Quote mark bottom-right */}
+              <div className="flex justify-end mt-6">
+                <span className="text-3xl font-serif text-gray-900 leading-none">
+                  &rdquo;&rdquo;
+                </span>
               </div>
             </div>
-          </div>
-
-          {/* Right: Secondary Image + Nav */}
-          <div className="lg:col-span-3 flex flex-col items-end gap-6">
-            <div className="relative w-full max-w-[220px] aspect-square rounded-2xl overflow-hidden shadow-md">
-              <Image
-                src={testimonial.secondaryImage}
-                alt="Client"
-                fill
-                className="object-cover transition-all duration-500"
-                key={`secondary-${testimonial.id}`}
-              />
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={goPrev}
-                aria-label="Previous testimonial"
-                className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition"
-              >
-                <ArrowLeft size={18} className="text-gray-700" />
-              </button>
-              <button
-                onClick={goNext}
-                aria-label="Next testimonial"
-                className="w-11 h-11 rounded-full bg-gray-900 flex items-center justify-center hover:bg-gray-800 transition"
-              >
-                <ArrowRight size={18} className="text-white" />
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
