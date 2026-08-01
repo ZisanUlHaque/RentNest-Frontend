@@ -8,7 +8,6 @@ export default function RegisterPage() {
       <div className="w-full max-w-6xl rounded-3xl bg-card p-6 md:p-10 bg-chart-1/10  shadow-lg border">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           
-          {/* LEFT SIDE - IMAGE */}
           <div className="relative h-[400px] lg:h-[700px] rounded-2xl overflow-hidden order-2 lg:order-1">
             <Image
               src="https://images.unsplash.com/photo-1634822929277-0c51ca0e8846?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -24,7 +23,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* RIGHT SIDE - FORM */}
           <div className="space-y-6 px-2 md:px-6 order-1 lg:order-2">
             {/* Logo */}
             <div className="italic text-2xl font-serif text-primary">

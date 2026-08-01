@@ -9,7 +9,6 @@ type ActionState = {
   data?: any
 }
 
-// ═══════ CREATE PROPERTY ═══════
 export const createProperty = async (
   prevState: ActionState,
   formData: FormData
@@ -57,7 +56,6 @@ export const createProperty = async (
   return result
 }
 
-// ═══════ UPDATE PROPERTY ═══════
 export const updateProperty = async (
   propertyId: string,
   prevState: ActionState,
@@ -109,7 +107,6 @@ export const updateProperty = async (
   return result
 }
 
-// ═══════ DELETE PROPERTY ═══════
 export const deleteProperty = async (propertyId: string) => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
@@ -136,7 +133,6 @@ export const deleteProperty = async (propertyId: string) => {
   return result
 }
 
-// ═══════ GET MY PROPERTIES ═══════
 export const getMyProperties = async () => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
