@@ -7,12 +7,12 @@ import { OurOffices } from "./_components/OurOffices";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-chart-2">
       {/* Header */}
       <div className="pt-16 pb-8 text-center">
-        <h1 className="text-2xl font-bold text-primary inline-block">
+        <h1 className="text-2xl font-bold text-white inline-block">
           Contact us
-          <span className="block w-12 h-1 bg-primary mx-auto mt-2 rounded-full" />
+          <span className="block w-12 h-1 bg-white mx-auto mt-2 rounded-full" />
         </h1>
       </div>
 

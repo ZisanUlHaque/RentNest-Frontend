@@ -24,7 +24,7 @@ const DashboardLayout = async ({
         <DashboardSidebar role={user.data.profile.role} />
 
         {/* Content Area */}
-        <main className="flex-1 min-w-0 lg:ml-64 transition-all duration-300">
+        <main className="flex-1 min-w-0 pb-24 lg:pb-0 lg:ml-64 transition-all duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </div>

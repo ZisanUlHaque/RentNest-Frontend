@@ -45,7 +45,6 @@ const mobileNavItems = [
 const userMenuItems = [
   { label: "Dashboard", icon: LayoutDashboard, action: "dashboard" },
   { label: "Profile", icon: User, action: "profile" },
-  { label: "Settings", icon: Settings, action: "settings" },
 ] as const;
 
 const dashboardRoutes: Record<IRole, string> = {
@@ -235,64 +234,70 @@ export function Navbar({ user }: NavbarProps) {
         </div>
       </nav>
 
-      <nav className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
-        <div className="flex items-center justify-around bg-black/85 backdrop-blur-lg rounded-2xl px-2 py-2.5 shadow-2xl border border-gray-800">
-          {mobileNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
-                  isActive
-                    ? "text-yellow-400"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Icon
-                  size={20}
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-                <span className="text-[10px] font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
+<nav className="fixed bottom-3 left-3 right-3 z-50 md:hidden">
+  <div className="flex items-center justify-between rounded-2xl border border-gray-800 bg-black/85 px-2 py-2 backdrop-blur-lg shadow-2xl">
+    {mobileNavItems.map((item) => {
+      const Icon = item.icon;
+      const isActive = pathname === item.href;
 
-          {/* Account/Login */}
-          {user?.success ? (
-            <button
-              onClick={() => handleUserMenuAction("dashboard")}
-              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
-                pathname.includes("dashboard")
-                  ? "text-yellow-400"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              <User
-                size={20}
-                strokeWidth={pathname.includes("dashboard") ? 2.5 : 2}
-              />
-              <span className="text-[10px] font-medium">Account</span>
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
-                pathname === "/login"
-                  ? "text-yellow-400"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              <User
-                size={20}
-                strokeWidth={pathname === "/login" ? 2.5 : 2}
-              />
-              <span className="text-[10px] font-medium">Login</span>
-            </Link>
-          )}
-        </div>
-      </nav>
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-2 transition-all ${
+            isActive
+              ? "text-yellow-400"
+              : "text-gray-400 hover:text-white"
+          }`}
+        >
+          <Icon
+            size={20}
+            strokeWidth={isActive ? 2.5 : 2}
+          />
+          <span className="text-[10px] leading-none font-medium">
+            {item.label}
+          </span>
+        </Link>
+      );
+    })}
+
+    {user?.success ? (
+      <button
+        onClick={() => handleUserMenuAction("dashboard")}
+        className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-2 transition-all ${
+          pathname.includes("dashboard")
+            ? "text-yellow-400"
+            : "text-gray-400 hover:text-white"
+        }`}
+      >
+        <User
+          size={20}
+          strokeWidth={pathname.includes("dashboard") ? 2.5 : 2}
+        />
+        <span className="text-[10px] leading-none font-medium">
+          Account
+        </span>
+      </button>
+    ) : (
+      <Link
+        href="/login"
+        className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-2 transition-all ${
+          pathname === "/login"
+            ? "text-yellow-400"
+            : "text-gray-400 hover:text-white"
+        }`}
+      >
+        <User
+          size={20}
+          strokeWidth={pathname === "/login" ? 2.5 : 2}
+        />
+        <span className="text-[10px] leading-none font-medium">
+          Login
+        </span>
+      </Link>
+    )}
+  </div>
+</nav>
 
       {/* Non-home pages spacing */}
       {!isHome && <div className="h-16" />}
