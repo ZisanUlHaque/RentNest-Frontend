@@ -127,3 +127,89 @@
     @apply font-sans;
     }
 }
+
+
+@layer utilities {
+  .dark {
+    /* ─── Backgrounds ─── */
+    .bg-white { background-color: var(--card) !important; }
+    .bg-gray-50 { background-color: var(--muted) !important; }
+    .bg-gray-100 { background-color: var(--muted) !important; }
+    .bg-gray-200 { background-color: var(--accent) !important; }
+    .bg-slate-50 { background-color: var(--muted) !important; }
+    .bg-slate-100 { background-color: var(--muted) !important; }
+    .bg-slate-200 { background-color: var(--accent) !important; }
+    .bg-neutral-50 { background-color: var(--muted) !important; }
+    .bg-neutral-100 { background-color: var(--muted) !important; }
+    .bg-zinc-50 { background-color: var(--muted) !important; }
+    .bg-zinc-100 { background-color: var(--muted) !important; }
+    .bg-stone-50 { background-color: var(--muted) !important; }
+    .bg-stone-100 { background-color: var(--muted) !important; }
+
+    /* ─── Text Colors ─── */
+    .text-black { color: var(--foreground) !important; }
+    .text-gray-900 { color: var(--foreground) !important; }
+    .text-gray-800 { color: var(--foreground) !important; }
+    .text-gray-700 { color: hsl(0 0% 85%) !important; }
+    .text-gray-600 { color: var(--muted-foreground) !important; }
+    .text-gray-500 { color: var(--muted-foreground) !important; }
+    .text-gray-400 { color: var(--muted-foreground) !important; }
+    .text-slate-900 { color: var(--foreground) !important; }
+    .text-slate-800 { color: var(--foreground) !important; }
+    .text-slate-700 { color: hsl(0 0% 85%) !important; }
+    .text-slate-600 { color: var(--muted-foreground) !important; }
+    .text-slate-500 { color: var(--muted-foreground) !important; }
+    .text-neutral-900 { color: var(--foreground) !important; }
+    .text-neutral-800 { color: var(--foreground) !important; }
+    .text-neutral-700 { color: hsl(0 0% 85%) !important; }
+    .text-neutral-600 { color: var(--muted-foreground) !important; }
+    .text-zinc-900 { color: var(--foreground) !important; }
+    .text-zinc-800 { color: var(--foreground) !important; }
+    .text-zinc-700 { color: hsl(0 0% 85%) !important; }
+    .text-zinc-600 { color: var(--muted-foreground) !important; }
+
+    /* ─── Borders ─── */
+    .border-gray-100 { border-color: var(--border) !important; }
+    .border-gray-200 { border-color: var(--border) !important; }
+    .border-gray-300 { border-color: var(--border) !important; }
+    .border-slate-100 { border-color: var(--border) !important; }
+    .border-slate-200 { border-color: var(--border) !important; }
+    .border-slate-300 { border-color: var(--border) !important; }
+    .border-neutral-100 { border-color: var(--border) !important; }
+    .border-neutral-200 { border-color: var(--border) !important; }
+    .border-zinc-100 { border-color: var(--border) !important; }
+    .border-zinc-200 { border-color: var(--border) !important; }
+
+    /* ─── Hover states ─── */
+    .hover\:bg-gray-50:hover { background-color: var(--accent) !important; }
+    .hover\:bg-gray-100:hover { background-color: var(--accent) !important; }
+    .hover\:bg-slate-50:hover { background-color: var(--accent) !important; }
+    .hover\:bg-slate-100:hover { background-color: var(--accent) !important; }
+    .hover\:bg-white:hover { background-color: var(--card) !important; }
+
+    /* ─── Placeholder ─── */
+    .placeholder\:text-gray-400::placeholder { color: var(--muted-foreground) !important; }
+    .placeholder\:text-gray-500::placeholder { color: var(--muted-foreground) !important; }
+    .placeholder\:text-slate-400::placeholder { color: var(--muted-foreground) !important; }
+    .placeholder\:text-slate-500::placeholder { color: var(--muted-foreground) !important; }
+
+    /* ─── Dividers ─── */
+    .divide-gray-100 > * + * { border-color: var(--border) !important; }
+    .divide-gray-200 > * + * { border-color: var(--border) !important; }
+    .divide-slate-100 > * + * { border-color: var(--border) !important; }
+    .divide-slate-200 > * + * { border-color: var(--border) !important; }
+
+    /* ─── Background opacity variants ─── */
+    .bg-white\/50 { background-color: hsl(from var(--card) h s l / 0.5) !important; }
+    .bg-white\/80 { background-color: hsl(from var(--card) h s l / 0.8) !important; }
+    .bg-white\/90 { background-color: hsl(from var(--card) h s l / 0.9) !important; }
+    .bg-white\/95 { background-color: hsl(from var(--card) h s l / 0.95) !important; }
+
+    /* ─── Common shadows adjustment ─── */
+    .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3) !important; }
+    .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.4) !important; }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5) !important; }
+    .shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.6) !important; }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.7) !important; }
+  }
+}
