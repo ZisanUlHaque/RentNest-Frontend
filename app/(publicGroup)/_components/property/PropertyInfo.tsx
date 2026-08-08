@@ -1,103 +1,111 @@
-import { Badge } from "@/components/ui/badge"
-import { MapPin, Home, Star, CheckCircle2 } from "lucide-react"
-import { IProperty } from "@/lib/types"
-import { Separator } from "@/components/ui/separator"
+// app/(publicGroup)/_components/property/PropertyInfo.tsx
+
+import { Card } from "@/components/ui/card"
+import {
+  Wifi,
+  Car,
+  Zap,
+  Wind,
+  Utensils,
+  Tv,
+  Home,
+  Shield,
+  Waves,
+  Dumbbell,
+  Info,
+  CheckCircle2,
+  Building,
+  type LucideIcon,
+} from "lucide-react"
+
+const AMENITY_ICONS: Record<string, LucideIcon> = {
+  wifi: Wifi,
+  parking: Car,
+  generator: Zap,
+  ac: Wind,
+  "air conditioning": Wind,
+  kitchen: Utensils,
+  tv: Tv,
+  elevator: Building,
+  security: Shield,
+  pool: Waves,
+  gym: Dumbbell,
+  default: Home,
+}
+
+const getAmenityIcon = (amenity: string) => {
+  const key = amenity.toLowerCase()
+  for (const [name, Icon] of Object.entries(AMENITY_ICONS)) {
+    if (key.includes(name)) return Icon
+  }
+  return AMENITY_ICONS.default
+}
 
 type Props = {
-  property: IProperty
+  property: {
+    description: string
+    amenities: string[]
+  }
 }
 
 export function PropertyInfo({ property }: Props) {
-  const reviewCount = property._count?.reviews ?? 0
-
   return (
-    <div className="space-y-10">
-      {/* Amenities */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Home className="size-5 text-primary" />
-          Amenities & Features
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {property.amenities.map((amenity) => (
-            <div
-              key={amenity}
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
-            >
-              <CheckCircle2 className="size-4 text-green-500 shrink-0" />
-              <span className="text-sm font-medium">{amenity}</span>
+    <div className="space-y-6">
+      {/* Description Card - Premium */}
+      <Card className="relative overflow-hidden border-border/50 p-6 shadow-lg shadow-black/5 sm:p-8 dark:shadow-black/20">
+        <div className="absolute -top-20 -right-20 size-40 rounded-full bg-primary/5 blur-2xl" />
+
+        <div className="relative">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-chart-3/20">
+              <Info className="size-5 text-primary" />
             </div>
-          ))}
-        </div>
-      </div>
+            <h2 className="text-2xl font-bold">About This Property</h2>
+          </div>
 
-      <Separator />
-
-      {/* Description */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4">About This Property</h3>
-        <div className="prose prose-sm max-w-none text-muted-foreground">
-          <p className="leading-relaxed whitespace-pre-wrap">
+          <p className="text-base leading-relaxed text-muted-foreground">
             {property.description}
           </p>
         </div>
-      </div>
+      </Card>
 
-      <Separator />
+      {/* Amenities Card - Premium */}
+      {property.amenities && property.amenities.length > 0 && (
+        <Card className="relative overflow-hidden border-border/50 p-6 shadow-lg shadow-black/5 sm:p-8 dark:shadow-black/20">
+          <div className="absolute -bottom-20 -left-20 size-40 rounded-full bg-chart-3/5 blur-2xl" />
 
-      {/* Details Grid */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4">Property Details</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <DetailItem
-            label="Location"
-            value={property.location}
-            icon={<MapPin className="size-4" />}
-          />
-          <DetailItem
-            label="Category"
-            value={property.category?.name || "N/A"}
-            icon={<Home className="size-4" />}
-          />
-          <DetailItem
-            label="Monthly Rent"
-            value={`৳${property.rentPerMonth.toLocaleString()}`}
-          />
-          <DetailItem
-            label="Reviews"
-            value={`${reviewCount} reviews`}
-            icon={<Star className="size-4" />}
-          />
-          <DetailItem
-            label="Status"
-            value={property.status}
-          />
-          <DetailItem
-            label="Listed On"
-            value={new Date(property.createdAt).toLocaleDateString()}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
+          <div className="relative">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-chart-3/20 to-primary/20">
+                <CheckCircle2 className="size-5 text-chart-3" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">Amenities</h2>
+                <p className="text-xs text-muted-foreground">
+                  {property.amenities.length} features available
+                </p>
+              </div>
+            </div>
 
-function DetailItem({
-  label,
-  value,
-  icon,
-}: {
-  label: string
-  value: string
-  icon?: React.ReactNode
-}) {
-  return (
-    <div className="p-4 rounded-xl border bg-card hover:shadow-sm transition-shadow">
-      <p className="text-xs text-muted-foreground mb-1">{label}</p>
-      <div className="flex items-center gap-1.5">
-        {icon && <span className="text-primary">{icon}</span>}
-        <p className="font-semibold text-sm">{value}</p>
-      </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {property.amenities.map((amenity) => {
+                const Icon = getAmenityIcon(amenity)
+                return (
+                  <div
+                    key={amenity}
+                    className="group flex items-center gap-3 rounded-xl border border-border/50 bg-gradient-to-br from-muted/30 to-muted/10 p-3 transition-all hover:-translate-y-1 hover:border-primary/50 hover:from-primary/5 hover:to-chart-3/5 hover:shadow-lg hover:shadow-primary/10"
+                  >
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-chart-3/10 transition-all group-hover:from-primary/20 group-hover:to-chart-3/20">
+                      <Icon className="size-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-semibold">{amenity}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }

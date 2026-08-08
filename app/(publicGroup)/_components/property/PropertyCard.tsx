@@ -1,28 +1,50 @@
+// components/properties/PropertyCard.tsx
+
+"use client"
+
 import Image from "next/image"
-import { MapPin, Star } from "lucide-react"
+import { MapPin, Star, Loader2, ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { IProperty } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 
 type PropertyCardProps = {
   post: IProperty
 }
 
 export function PropertyCard({ post }: PropertyCardProps) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
   const reviewCount = post._count?.reviews ?? post.reviews?.length ?? 0
+  const loading = isPending
+
+  const handleViewDetails = () => {
+    startTransition(() => {
+      router.push(`/properties/${post.id}`)
+    })
+  }
+
+  const handleMouseEnter = () => {
+    router.prefetch(`/properties/${post.id}`)
+  }
 
   return (
-    <Card className="flex flex-col overflow-hidden pt-0">
-      <div className="relative h-56 w-full">
+    <Card
+      onMouseEnter={handleMouseEnter}
+      className="group flex flex-col overflow-hidden pt-0"
+    >
+      <div className="relative h-56 w-full overflow-hidden">
         <Image
           src={post.images[0]}
           alt={post.title}
           fill
           unoptimized
-          className="object-cover"
+          className="object-cover transition-transform"
         />
 
         <Badge
@@ -37,11 +59,22 @@ export function PropertyCard({ post }: PropertyCardProps) {
         >
           {post.status}
         </Badge>
+
+        {loading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-2 text-white">
+              <Loader2 className="size-8 animate-spin" />
+              <p className="text-xs font-medium">Loading details...</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <CardContent className="flex flex-1 flex-col space-y-4 p-4">
         <div>
-          <h3 className="line-clamp-1 text-lg font-semibold">{post.title}</h3>
+          <h3 className="line-clamp-1 text-lg font-semibold transition-colors group-hover:text-primary">
+            {post.title}
+          </h3>
           <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             {post.location}
@@ -74,14 +107,23 @@ export function PropertyCard({ post }: PropertyCardProps) {
           </div>
         </div>
 
-        <Link href={`/properties/${post.id}`} className="w-full">
-          <Button
-            variant="outline"
-            className="w-full bg-chart-4 text-white hover:bg-chart-3"
-          >
-            View Details
-          </Button>
-        </Link>
+        <Button
+          onClick={handleViewDetails}
+          disabled={loading}
+          className="w-full bg-chart-4 text-white transition-all hover:bg-chart-3 disabled:cursor-wait disabled:opacity-100"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            <>
+              View Details
+              <ArrowRight className="ml-2 size-4" />
+            </>
+          )}
+        </Button>
       </CardContent>
     </Card>
   )

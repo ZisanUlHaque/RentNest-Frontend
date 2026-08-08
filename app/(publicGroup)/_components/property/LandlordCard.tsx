@@ -1,69 +1,85 @@
+// app/(publicGroup)/_components/property/LandlordCard.tsx
+
+import Image from "next/image"
+import { Mail, Phone, User, CreditCard } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { IUser } from "@/lib/types"
-import { MessageCircle, BadgeCheck, Phone } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+
+type Landlord = {
+  id: string
+  name: string
+  email?: string
+  phone?: string
+  profilePhoto?: string
+}
 
 type Props = {
-  landlord: IUser
+  landlord: Landlord
 }
 
 export function LandlordCard({ landlord }: Props) {
   return (
-    <Card className="overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary/5 to-primary/10 px-6 py-4">
-        <h3 className="flex items-center gap-2 font-semibold">
-          <BadgeCheck className="size-4 text-primary" />
-          Listed by
-        </h3>
-      </div>
+    <Card className="p-6 border-border/50">
+      <h3 className="mb-4 text-base font-bold">Landlord Details</h3>
 
-      <div className="space-y-5 p-6">
-        {/* Profile */}
-        <div className="flex items-center gap-4">
-          <Avatar className="size-16 border-2 border-primary/20">
-            <AvatarImage src={landlord.profilePhoto || ""} />
-            <AvatarFallback className="bg-primary/10 text-lg font-bold text-primary">
-              {landlord.name?.[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="text-lg font-semibold">{landlord.name}</p>
-              <BadgeCheck className="size-4 text-blue-500" />
+      {/* Profile */}
+      <div className="mb-4 flex items-center gap-3">
+        <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-muted">
+          {landlord.profilePhoto ? (
+            <Image
+              src={landlord.profilePhoto}
+              alt={landlord.name}
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-primary/10">
+              <User className="size-5 text-primary" />
             </div>
-            <p className="text-sm text-muted-foreground">{landlord.email}</p>
-          </div>
-        </div>
-
-        <Separator />
-        {/* Actions */}
-        <div className="space-y-3">
-          <Button  variant="outline" className="w-full">
-            <a
-              href={`mailto:${landlord.email}`}
-              className="flex items-center justify-center gap-2"
-            >
-              <MessageCircle className="size-4" />
-              <span>Send Email</span>
-            </a>
-          </Button>
-
-          {landlord.phone && (
-            <Button  variant="ghost" className="w-full bg-chart-3 hover:bg-chart-2">
-              <a
-                href={`tel:${landlord.phone}`}
-                className="flex items-center justify-center gap-2"
-              >
-                <Phone className="size-4" />
-                <span>{landlord.phone}</span>
-              </a>
-            </Button>
           )}
         </div>
+        <div className="min-w-0">
+          <p className="truncate font-bold text-sm">{landlord.name}</p>
+          <p className="text-xs text-muted-foreground">Property Owner</p>
+        </div>
       </div>
+
+      {/* Payment Method */}
+      <div className="mb-4 flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+        <CreditCard className="size-4 text-primary shrink-0" />
+        <div className="min-w-0">
+          <p className="text-[10px] text-muted-foreground uppercase font-medium">
+            Payment Method
+          </p>
+          <p className="text-xs font-semibold">Stripe / Cash</p>
+        </div>
+      </div>
+
+      {/* Contact Buttons */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        {landlord.phone && (
+          <a href={`tel:${landlord.phone}`}>
+            <Button variant="outline" size="sm" className="w-full">
+              <Phone className="mr-1.5 size-3.5" />
+              Contact
+            </Button>
+          </a>
+        )}
+        {landlord.email && (
+          <a href={`mailto:${landlord.email}`}>
+            <Button variant="outline" size="sm" className="w-full">
+              <Mail className="mr-1.5 size-3.5" />
+              Email
+            </Button>
+          </a>
+        )}
+      </div>
+
+      {/* Register Interest */}
+      <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold">
+        Register Interest
+      </Button>
     </Card>
   )
 }

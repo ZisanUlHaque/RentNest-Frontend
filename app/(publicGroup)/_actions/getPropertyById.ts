@@ -6,8 +6,10 @@ export const getPropertyById = async (id: string) => {
   const res = await fetch(
     `${process.env.BACKEND_API_URL}/api/properties/${id}`,
     {
-      cache: "no-store",
-      next: { tags: ["property"] },
+      next: {
+        revalidate: 3600, 
+        tags: [`property-${id}`, "properties"],
+      },
     }
   )
 
@@ -17,5 +19,5 @@ export const getPropertyById = async (id: string) => {
   }
 
   const result = await res.json()
-  return result.data // assuming your API returns { success: true, data: property }
+  return result.data
 }
