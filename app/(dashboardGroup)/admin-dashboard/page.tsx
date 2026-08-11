@@ -20,7 +20,6 @@ import { IPayment, IProperty, IRentalRequest, IUser } from "@/lib/types"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 
-// Helper: safely extract array from various response shapes
 const toArray = <T,>(res: unknown): T[] => {
   if (Array.isArray(res)) return res as T[]
   if (typeof res !== "object" || res === null) return []

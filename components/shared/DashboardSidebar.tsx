@@ -10,11 +10,12 @@ import {
   CreditCard,
   Star,
   Home,
-  Settings,
-  ChartBar,
   Shield,
   Menu,
   X,
+  User,
+  BarChart3,
+  FolderTree,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -42,16 +43,20 @@ const menuConfig: Record<IRole, MenuItem[]> = {
     { label: "My Properties", href: "/landlord-dashboard/properties", icon: Building2 },
     { label: "Requests", href: "/landlord-dashboard/requests", icon: FileText },
     { label: "Earnings", href: "/landlord-dashboard/earnings", icon: CreditCard },
+    { label: "Analytics", href: "/landlord-dashboard/analytics", icon: BarChart3 },
   ],
   ADMIN: [
     { label: "Overview", href: "/admin-dashboard", icon: LayoutDashboard },
     { label: "All Users", href: "/admin-dashboard/users", icon: Users },
     { label: "All Properties", href: "/admin-dashboard/properties", icon: Building2 },
     { label: "All Rentals", href: "/admin-dashboard/rentals", icon: FileText },
+    { label: "Categories", href: "/admin-dashboard/categories", icon: FolderTree },
+    { label: "Analytics", href: "/admin-dashboard/analytics", icon: BarChart3 },
   ],
 }
 
 const bottomItems: MenuItem[] = [
+  { label: "Profile", href: "/profile", icon: User },
   { label: "Browse Properties", href: "/properties", icon: Home },
 ]
 
@@ -63,7 +68,7 @@ export function DashboardSidebar({ role }: Props) {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
+      {/* Mobile Toggle */}
       <Button
         variant="outline"
         size="icon"
@@ -73,7 +78,6 @@ export function DashboardSidebar({ role }: Props) {
         {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
       </Button>
 
-      {/* Overlay for mobile */}
       {isOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-30 top-16"
@@ -81,7 +85,6 @@ export function DashboardSidebar({ role }: Props) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed left-0 top-16 bottom-0 w-64 bg-background border-r flex flex-col z-40 transition-transform duration-300",
@@ -103,8 +106,8 @@ export function DashboardSidebar({ role }: Props) {
           </div>
         </div>
 
-        {/* Main Menu */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+          {/* Main Menu */}
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
             Main Menu
           </p>
@@ -141,10 +144,9 @@ export function DashboardSidebar({ role }: Props) {
             )
           })}
 
-          {/* Divider */}
           <div className="my-6 border-t" />
 
-          {/* Bottom Menu */}
+          {/* General - includes Profile */}
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
             General
           </p>
@@ -171,7 +173,7 @@ export function DashboardSidebar({ role }: Props) {
           })}
         </nav>
 
-        {/* Bottom Info Card */}
+        {/* Help Card */}
         <div className="p-4 border-t">
           <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
             <p className="text-xs font-semibold text-primary mb-1">

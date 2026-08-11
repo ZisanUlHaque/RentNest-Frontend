@@ -36,7 +36,6 @@ export const updateProfile = async (payload: {
 
     return result
   } catch (error) {
-    // console.error("updateProfile error:", error)
     return {
       success: false,
       message: "Failed to update profile",
